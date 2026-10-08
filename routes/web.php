@@ -8,4 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/report/price-list', fn (): string => Reports::html(new PriceListReport));
+Route::get('/report/price-list', fn (): string => Reports::html(
+    new PriceListReport,
+    options: ['meta' => ['subtitle' => 'Preisliste 2026']],
+));

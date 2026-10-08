@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reports\PriceList;
 
+use App\Reports\Layout\CompanyLayout;
 use Guggach\Reports\Definition\ReportBuilder;
 use Guggach\Reports\Report as BaseReport;
 use Guggach\Reports\Sources\ArraySource;
@@ -19,6 +20,11 @@ final class Report extends BaseReport
     public function name(): string
     {
         return 'Preisliste';
+    }
+
+    public function layout(): string
+    {
+        return CompanyLayout::class;
     }
 
     public function source(): ReportSource
