@@ -10,6 +10,7 @@
         url="/report/price-list"
         :page-setup="$pageSetup"
         title="Preisliste 2026"
+        pdf="/report/price-list.pdf"
     />
 </body>
 </html>

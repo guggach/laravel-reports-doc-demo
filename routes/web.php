@@ -16,3 +16,9 @@ Route::get('/report/price-list', fn (): string => Reports::html(
 Route::get('/report/price-list/preview', fn () => view('preview', [
     'pageSetup' => Reports::pageSetup(new PriceListReport),
 ]));
+
+Route::get('/report/price-list.pdf', fn () => response(
+    Reports::pdf(new PriceListReport, options: ['meta' => ['subtitle' => 'Preisliste 2026']]),
+    200,
+    ['Content-Type' => 'application/pdf'],
+));
