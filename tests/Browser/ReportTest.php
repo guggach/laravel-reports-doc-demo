@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-it('renders the grouped price list report inside the company layout', function (): void {
-    $page = visit('/report/price-list');
+it('renders the grouped price list report', function (): void {
+    $page = visit('/reports/internal/price-list');
 
     $page->assertSee('Guggach AG')
         ->assertSee('Preisliste')

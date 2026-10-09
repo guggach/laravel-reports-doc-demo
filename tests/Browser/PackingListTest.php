@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 it('renders the strict packing list as fixed A4 pages', function (): void {
-    $page = visit('/report/packing-list');
+    $page = visit('/reports/internal/packing-list');
 
     $page->assertSee('Lieferschein')
         ->assertSee('Seite 1 / 3')
