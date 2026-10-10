@@ -6,7 +6,7 @@
     <title>{{ $title ?? 'Report' }}</title>
     <style>
         @page {
-            size: A4 {{ $pageSetup->orientation }};
+            size: {{ $pageSetup->size }} {{ $pageSetup->orientation }};
             margin: {{ $pageSetup->margins['top'] }}mm {{ $pageSetup->margins['right'] }}mm {{ $pageSetup->margins['bottom'] }}mm {{ $pageSetup->margins['left'] }}mm;
         }
         body { font-family: sans-serif; color: #1f2937; margin: 0; }
@@ -17,18 +17,20 @@
     </style>
 </head>
 <body data-layout="company">
-    <header class="brand">
-        <span class="name">Guggach AG</span>
-        <span class="meta">{{ $meta['subtitle'] ?? 'Report' }} · {{ now()->format('d.m.Y') }}</span>
-    </header>
+    <x-reports::surface :page-setup="$pageSetup">
+        <header class="brand">
+            <span class="name">Guggach AG</span>
+            <span class="meta">{{ $meta['subtitle'] ?? 'Report' }} · {{ now()->format('d.m.Y') }}</span>
+        </header>
 
-    <main>
-        {!! $content ?? '' !!}
-    </main>
+        <main>
+            {!! $content ?? '' !!}
+        </main>
 
-    <footer class="footer">
-        <span>Guggach AG · Musterstrasse 1 · 8000 Zürich</span>
-        <span>{{ $title }}</span>
-    </footer>
+        <footer class="footer">
+            <span>Guggach AG · Musterstrasse 1 · 8000 Zürich</span>
+            <span>{{ $title }}</span>
+        </footer>
+    </x-reports::surface>
 </body>
 </html>
