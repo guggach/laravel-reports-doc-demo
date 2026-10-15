@@ -6,6 +6,7 @@ namespace App\Reports\PriceList;
 
 use App\Reports\Layout\CompanyLayout;
 use Guggach\Reports\Definition\ReportBuilder;
+use Guggach\Reports\Filters\FilterBuilder;
 use Guggach\Reports\Report as BaseReport;
 use Guggach\Reports\Sources\ArraySource;
 use Guggach\Reports\Sources\ReportField;
@@ -32,18 +33,36 @@ final class Report extends BaseReport
     {
         return new ArraySource(
             records: [
-                ['sku' => 'A-100', 'name' => 'Kaffeemaschine', 'category' => 'Küche', 'price' => 129.00],
-                ['sku' => 'B-200', 'name' => 'Wasserkocher', 'category' => 'Küche', 'price' => 39.90],
-                ['sku' => 'C-300', 'name' => 'Toaster', 'category' => 'Büro', 'price' => 59.50],
-                ['sku' => 'D-400', 'name' => 'Mixer', 'category' => 'Büro', 'price' => 89.00],
+                ['sku' => 'A-100', 'name' => 'Kaffeemaschine', 'category' => 'Küche', 'supplier' => 'Acme AG', 'price' => 129.00],
+                ['sku' => 'B-200', 'name' => 'Wasserkocher', 'category' => 'Küche', 'supplier' => 'Acme AG', 'price' => 39.90],
+                ['sku' => 'C-300', 'name' => 'Toaster', 'category' => 'Büro', 'supplier' => 'Berger GmbH', 'price' => 59.50],
+                ['sku' => 'D-400', 'name' => 'Mixer', 'category' => 'Büro', 'supplier' => 'Conti AG', 'price' => 89.00],
             ],
             fields: [
                 new ReportField('sku', 'SKU', type: 'string'),
                 new ReportField('name', 'Bezeichnung', type: 'string'),
                 new ReportField('category', 'Kategorie', type: 'enum', options: ['Küche', 'Büro']),
+                new ReportField('supplier', 'Lieferant', type: 'relation', options: [
+                    'Acme AG', 'Berger GmbH', 'Conti AG', 'Delta Handels',
+                    'Egger & Co', 'Fuchs AG', 'Graf GmbH', 'Huber AG',
+                ]),
                 new ReportField('price', 'Preis', type: 'number'),
             ],
         );
+    }
+
+    /**
+     * Demonstrate the fluent control description: operator listbox for the
+     * number, multiselect for the enum and a searchable dual-list for the
+     * relation (id/FK) field.
+     */
+    public function filterControls(): array
+    {
+        return FilterBuilder::for($this->source())
+            ->field('price')->operators(['=', '>=', '<=', 'between', 'in'])
+            ->field('category')->multiselect()
+            ->field('supplier')->picker(valueField: 'id', labelField: 'label')
+            ->build();
     }
 
     public function define(ReportBuilder $r): void
