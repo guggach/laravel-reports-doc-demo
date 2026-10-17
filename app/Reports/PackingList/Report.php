@@ -48,9 +48,10 @@ final class Report extends BaseReport
         $r->mode(ReportMode::Strict);
         $r->pageSetup(PageSetup::a4()->portrait()->marginsMm(20, 15, 20, 15));
 
-        $r->pageHeader(view: 'reports.packing-list.header')->height(20);
-        $r->gridHeader(view: 'reports.packing-list.grid-head')->height(8);
-        $r->detail(view: 'reports.packing-list.row', height: 8);
-        $r->pageFooter(view: 'reports.packing-list.footer')->height(10);
+        // Module-relative view names resolve to app/Reports/PackingList/views/*.
+        $r->pageHeader(view: 'header')->height(20);
+        $r->gridHeader(view: 'grid-head')->height(8);
+        $r->detail(view: 'row', height: 8);
+        $r->pageFooter(view: 'footer')->height(10);
     }
 }

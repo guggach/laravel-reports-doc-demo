@@ -67,14 +67,15 @@ final class Report extends BaseReport
 
     public function define(ReportBuilder $r): void
     {
-        $r->pageHeader(view: 'reports.price-list.header');
-        $r->detail(view: 'reports.price-list.row');
-        $r->pageFooter(view: 'reports.price-list.footer');
+        // Module-relative view names resolve to app/Reports/PriceList/views/*.
+        $r->pageHeader(view: 'header');
+        $r->detail(view: 'row');
+        $r->pageFooter(view: 'footer');
 
         // Grouped by category (data is sorted by category) with a subtotal.
         $r->group('category', function ($g): void {
-            $g->header(view: 'reports.price-list.category-head');
-            $g->footer(view: 'reports.price-list.category-foot');
+            $g->header(view: 'category-head');
+            $g->footer(view: 'category-foot');
             $g->aggSum('price', as: 'category_total');
         });
     }
