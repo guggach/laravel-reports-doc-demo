@@ -2,8 +2,86 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../../app/**/*.php';
+@source '../../app/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* ── Code highlighting (Tempest Highlight token classes) ────────────────── */
+
+code.hl {
+    color: #24292f;
+}
+
+.hl-keyword { color: #cf222e; }
+.hl-type { color: #953800; }
+.hl-value { color: #0a3069; }
+.hl-variable { color: #0550ae; }
+.hl-property { color: #8250df; }
+.hl-attribute { color: #0550ae; }
+.hl-number { color: #0550ae; }
+.hl-literal { color: #0550ae; }
+.hl-operator { color: #0550ae; }
+.hl-generic { color: #8250df; }
+.hl-injection { color: #953800; }
+.hl-comment { color: #6e7781; font-style: italic; }
+.hl-addition { color: #1a7f37; }
+.hl-deletion { color: #cf222e; }
+.hl-diff-context { color: #6e7781; }
+
+.dark code.hl {
+    color: #c9d1d9;
+}
+
+.dark .hl-keyword { color: #ff7b72; }
+.dark .hl-type { color: #ffa657; }
+.dark .hl-value { color: #a5d6ff; }
+.dark .hl-variable { color: #79c0ff; }
+.dark .hl-property { color: #d2a8ff; }
+.dark .hl-attribute { color: #79c0ff; }
+.dark .hl-number { color: #79c0ff; }
+.dark .hl-literal { color: #79c0ff; }
+.dark .hl-operator { color: #ff7b72; }
+.dark .hl-generic { color: #d2a8ff; }
+.dark .hl-injection { color: #ffa657; }
+.dark .hl-comment { color: #8b949e; }
+.dark .hl-addition { color: #7ee787; }
+.dark .hl-deletion { color: #ffa198; }
+.dark .hl-diff-context { color: #8b949e; }
+
+/* ── Documentation content ──────────────────────────────────────────────── */
+
+@layer components {
+    .doc-title {
+        @apply text-3xl font-semibold tracking-tight text-slate-900 dark:text-white;
+    }
+
+    .doc-lead {
+        @apply mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-300;
+    }
+
+    .doc-h2 {
+        @apply mt-12 text-xl font-semibold tracking-tight text-slate-900 dark:text-white;
+    }
+
+    .doc-h3 {
+        @apply mt-8 font-semibold text-slate-900 dark:text-white;
+    }
+
+    .doc-p {
+        @apply mt-3 leading-relaxed text-slate-600 dark:text-slate-300;
+    }
+
+    .doc-ul {
+        @apply mt-3 space-y-2 text-slate-600 dark:text-slate-300;
+    }
 }

@@ -1,5 +1,3 @@
-<h1 style="margin:0 0 12px">{{ $ctx->report->name() }}</h1>
-
 <table style="width:100%; border-collapse:collapse">
     <thead>
         <tr style="border-bottom:2px solid #111">

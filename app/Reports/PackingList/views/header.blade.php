@@ -9,4 +9,4 @@
 </style>
 
 <div class="pl-title">Lieferschein</div>
-<div class="pl-sub">Guggach AG · Musterstrasse 1 · 8000 Zürich</div>
+<div class="pl-sub">Acme AG · Beispielstrasse 1 · 8000 Zürich</div>

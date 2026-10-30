@@ -8,8 +8,6 @@ use App\Reports\Layout\CompanyLayout;
 use Guggach\Reports\Definition\ReportBuilder;
 use Guggach\Reports\Filters\FilterBuilder;
 use Guggach\Reports\Report as BaseReport;
-use Guggach\Reports\Sources\ArraySource;
-use Guggach\Reports\Sources\ReportField;
 use Guggach\Reports\Sources\ReportSource;
 
 final class Report extends BaseReport
@@ -31,24 +29,7 @@ final class Report extends BaseReport
 
     public function source(): ReportSource
     {
-        return new ArraySource(
-            records: [
-                ['sku' => 'A-100', 'name' => 'Kaffeemaschine', 'category' => 'Küche', 'supplier' => 'Acme AG', 'price' => 129.00],
-                ['sku' => 'B-200', 'name' => 'Wasserkocher', 'category' => 'Küche', 'supplier' => 'Acme AG', 'price' => 39.90],
-                ['sku' => 'C-300', 'name' => 'Toaster', 'category' => 'Büro', 'supplier' => 'Berger GmbH', 'price' => 59.50],
-                ['sku' => 'D-400', 'name' => 'Mixer', 'category' => 'Büro', 'supplier' => 'Conti AG', 'price' => 89.00],
-            ],
-            fields: [
-                new ReportField('sku', 'SKU', type: 'string'),
-                new ReportField('name', 'Bezeichnung', type: 'string'),
-                new ReportField('category', 'Kategorie', type: 'enum', options: ['Küche', 'Büro']),
-                new ReportField('supplier', 'Lieferant', type: 'relation', options: [
-                    'Acme AG', 'Berger GmbH', 'Conti AG', 'Delta Handels',
-                    'Egger & Co', 'Fuchs AG', 'Graf GmbH', 'Huber AG',
-                ]),
-                new ReportField('price', 'Preis', type: 'number'),
-            ],
-        );
+        return new Source;
     }
 
     /**
@@ -68,9 +49,12 @@ final class Report extends BaseReport
     public function define(ReportBuilder $r): void
     {
         // Module-relative view names resolve to app/Reports/PriceList/views/*.
-        $r->pageHeader(view: 'header');
+        // Report start/end run once per report; the grid header introduces the
+        // table and the detail band renders one row per record.
+        $r->reportStart(view: 'report-start');
+        $r->gridHeader(view: 'grid-head');
         $r->detail(view: 'row');
-        $r->pageFooter(view: 'footer');
+        $r->reportEnd(view: 'report-end');
 
         // Grouped by category (data is sorted by category) with a subtotal.
         $r->group('category', function ($g): void {

@@ -43,7 +43,7 @@ it('filters the internal price list by a numeric range', function (): void {
 });
 
 it('filters the internal price list by a relation in-list', function (): void {
-    $response = $this->get('/reports/internal/price-list?supplier[]=Acme%20AG');
+    $response = $this->get('/reports/internal/price-list?supplier[]=Nordwind%20AG');
 
     $content = (string) $response->getContent();
 

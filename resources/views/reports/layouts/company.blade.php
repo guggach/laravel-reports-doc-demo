@@ -19,7 +19,7 @@
 <body data-layout="company">
     <x-reports::surface :page-setup="$pageSetup">
         <header class="brand">
-            <span class="name">Guggach AG</span>
+            <span class="name">Acme AG</span>
             <span class="meta">{{ $meta['subtitle'] ?? 'Report' }} · {{ now()->format('d.m.Y') }}</span>
         </header>
 
@@ -28,7 +28,7 @@
         </main>
 
         <footer class="footer">
-            <span>Guggach AG · Musterstrasse 1 · 8000 Zürich</span>
+            <span>Acme AG · Beispielstrasse 1 · 8000 Zürich</span>
             <span>{{ $title }}</span>
         </footer>
     </x-reports::surface>

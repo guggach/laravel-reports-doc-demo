@@ -12,7 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Localizer: SetLocale must run after StartSession (session-based
+        // detection) and before SubstituteBindings (translated bindings).
+        $middleware->web(remove: [
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        $middleware->web(append: [
+            \NielsNumbers\LaravelLocalizer\Middleware\SetLocale::class,
+            \NielsNumbers\LaravelLocalizer\Middleware\RedirectLocale::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -8,7 +8,6 @@ use Guggach\Reports\Definition\PageSetup;
 use Guggach\Reports\Definition\ReportBuilder;
 use Guggach\Reports\Definition\ReportMode;
 use Guggach\Reports\Report as BaseReport;
-use Guggach\Reports\Sources\ArraySource;
 use Guggach\Reports\Sources\ReportSource;
 
 final class Report extends BaseReport
@@ -30,17 +29,7 @@ final class Report extends BaseReport
 
     public function source(): ReportSource
     {
-        $rows = [];
-
-        for ($i = 1; $i <= 60; $i++) {
-            $rows[] = [
-                'pos' => $i,
-                'article' => 'Artikel '.str_pad((string) $i, 3, '0', STR_PAD_LEFT),
-                'qty' => ($i % 5) + 1,
-            ];
-        }
-
-        return new ArraySource($rows);
+        return new Source;
     }
 
     public function define(ReportBuilder $r): void
