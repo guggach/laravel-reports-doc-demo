@@ -105,6 +105,26 @@ return [
                 ['path' => 'app/Reports/LabelSheet/views/footer.blade.php', 'label' => 'views/footer.blade.php', 'lang' => 'blade'],
             ],
         ],
+        [
+            'key' => 'invoice_example',
+            'badges' => ['strict', 'form', 'pagination'],
+            'structure' => implode("\n", [
+                'app/Reports/InvoiceExample/',
+                '├── Report.php              # freeform(), strict, pageNumbering(perForm)',
+                '├── Source.php              # two demo invoices',
+                '└── views/',
+                '    ├── invoice.blade.php   # detail: page-block per invoice section',
+                '    ├── header.blade.php    # page 2+ header',
+                '    └── footer.blade.php',
+            ]),
+            'files' => [
+                ['path' => 'app/Reports/InvoiceExample/Report.php', 'label' => 'Report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/InvoiceExample/Source.php', 'label' => 'Source.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/InvoiceExample/views/invoice.blade.php', 'label' => 'views/invoice.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/InvoiceExample/views/header.blade.php', 'label' => 'views/header.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/InvoiceExample/views/footer.blade.php', 'label' => 'views/footer.blade.php', 'lang' => 'blade'],
+            ],
+        ],
     ],
 
 ];

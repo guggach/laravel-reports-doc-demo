@@ -94,6 +94,8 @@ return [
             'filters' => 'Filter',
             'pagination' => 'Paginierung',
             'nup' => 'N-up',
+            'form' => 'Formular',
+            'freeform' => 'Free-form',
         ],
         'items' => [
             'price_list' => [
@@ -130,6 +132,19 @@ return [
                     'Die Engine fasst jede Zeile in ein eigenes Grid — nie ein Grid über mehrere Seiten',
                     'Die letzte Zeile wird mit leeren Zellen aufgefüllt, damit die Spalten bündig bleiben',
                     'Strict-Modus: 7 Zeilen × 4 Etiketten = 28 Etiketten pro Seite, mit Seitenzahlen im Fuss',
+                ],
+            ],
+            'invoice_example' => [
+                'title' => 'Rechnung',
+                'tagline' => 'Free-form-Formular mit Einzahlungsschein',
+                'description' => 'Eine vollständige Rechnung pro Datensatz, aufgebaut aus Page-Blocks mit deklarierten Höhen. Der Swiss-QR-Einzahlungsschein bleibt auf Seite 1, wenn er Platz hat, und rutscht auf Seite 2, wenn die Rechnungspositionen den Platz brauchen.',
+                'highlights' => [
+                    'freeform() rendert ein vollständiges Formular pro Detail-Datensatz',
+                    'Jeder Abschnitt ist ein <x-reports::page-block> mit deklarierter Höhe',
+                    'Der Einzahlungsschein ist ein Block: Er passt auf Seite 1 oder rutscht automatisch auf Seite 2',
+                    'pageNumbering(perForm) startet den Seitenzähler für jede Rechnung neu',
+                    'Der Seitenkopf mit Rechnungsnummer und Kunde wird auf Seite 1 ausgeblendet',
+                    'Ein Block, der höher als der Seiteninhalt ist, wirft eine BandOverflowException',
                 ],
             ],
         ],

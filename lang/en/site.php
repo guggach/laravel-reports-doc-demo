@@ -94,6 +94,8 @@ return [
             'filters' => 'Filters',
             'pagination' => 'Pagination',
             'nup' => 'N-up',
+            'form' => 'Form',
+            'freeform' => 'Free-form',
         ],
         'items' => [
             'price_list' => [
@@ -130,6 +132,19 @@ return [
                     'The engine wraps every row in its own grid — never one grid across pages',
                     'The last row is padded with empty cells so the columns stay aligned',
                     'Strict mode: 7 rows × 4 labels = 28 labels per page, with page numbers in the footer',
+                ],
+            ],
+            'invoice_example' => [
+                'title' => 'Invoice',
+                'tagline' => 'Free-form form with payment slip',
+                'description' => 'One complete invoice per record, built from page blocks with declared heights. The Swiss QR payment slip stays on page 1 when it fits and moves to page 2 when the invoice positions need the space.',
+                'highlights' => [
+                    'freeform() renders one complete form per detail record',
+                    'Every section is an <x-reports::page-block> with a declared height',
+                    'The payment slip is a block: it fits on page 1 or moves to page 2 automatically',
+                    'pageNumbering(perForm) restarts the page counter for every invoice',
+                    'The page header with invoice number and customer is hidden on page 1',
+                    'A block taller than the page body throws a BandOverflowException',
                 ],
             ],
         ],
