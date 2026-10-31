@@ -46,7 +46,6 @@
     .contract-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 20mm; margin-top: 14mm; }
     .contract-signature { border-top: 1px solid #64748b; padding-top: 2mm; font-size: 8px; color: #64748b; }
 
-    .contract-page-break { break-before: page; page-break-before: always; }
     .contract-terms-head {
         display: flex;
         justify-content: space-between;
@@ -130,6 +129,8 @@
         <div class="contract-signature">Ort, Datum / Käufer</div>
     </div>
 </article>
+
+<x-reports::page-break />
 
 <section class="contract-page-break">
     <div class="contract-terms-head">
