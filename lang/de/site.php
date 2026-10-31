@@ -147,6 +147,18 @@ return [
                     'Ein Block, der höher als der Seiteninhalt ist, wirft eine BandOverflowException',
                 ],
             ],
+            'contract_example' => [
+                'title' => 'Autokaufvertrag',
+                'tagline' => 'Free-form-Flow mit Allgemeinen Bedingungen',
+                'description' => 'Ein Autokaufvertrag im Flow-Modus. Der Browser paginiert den Fliesstext; ein CSS-Seitenumbruch startet die Allgemeinen Bedingungen auf Seite 2.',
+                'highlights' => [
+                    'freeform() im Flow-Modus: keine festen Page-Blocks, nur Blade-Markup',
+                    'Die Allgemeinen Bedingungen starten via break-before: page auf Seite 2',
+                    'Lange Klauseln fliessen natürlich über Seitengrenzen',
+                    'break-inside: avoid hält einzelne Klauseln zusammen',
+                    'Derselbe Vertrag lässt sich als HTML-Vorschau und PDF ausgeben',
+                ],
+            ],
         ],
     ],
 

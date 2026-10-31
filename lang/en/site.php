@@ -147,6 +147,18 @@ return [
                     'A block taller than the page body throws a BandOverflowException',
                 ],
             ],
+            'contract_example' => [
+                'title' => 'Car purchase contract',
+                'tagline' => 'Free-form flow with general terms',
+                'description' => 'A car purchase contract in Flow mode. The browser paginates the prose, and a CSS page break starts the general terms on page 2.',
+                'highlights' => [
+                    'freeform() in Flow mode: no fixed page blocks, just Blade markup',
+                    'The general terms start on page 2 via break-before: page',
+                    'Long clauses flow naturally across page boundaries',
+                    'break-inside: avoid keeps individual clauses together',
+                    'The same contract can be exported as HTML preview and PDF',
+                ],
+            ],
         ],
     ],
 

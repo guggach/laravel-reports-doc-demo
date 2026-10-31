@@ -125,6 +125,24 @@ return [
                 ['path' => 'app/Reports/InvoiceExample/views/footer.blade.php', 'label' => 'views/footer.blade.php', 'lang' => 'blade'],
             ],
         ],
+        [
+            'key' => 'contract_example',
+            'badges' => ['flow', 'freeform'],
+            'structure' => implode("\n", [
+                'app/Reports/ContractExample/',
+                '├── Report.php              # freeform(), flow, browser pagination',
+                '├── Source.php              # one car purchase contract',
+                '└── views/',
+                '    ├── contract.blade.php  # page 1 + forced page break',
+                '    └── terms.blade.php     # general terms from page 2',
+            ]),
+            'files' => [
+                ['path' => 'app/Reports/ContractExample/Report.php', 'label' => 'Report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/ContractExample/Source.php', 'label' => 'Source.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/ContractExample/views/contract.blade.php', 'label' => 'views/contract.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/ContractExample/views/terms.blade.php', 'label' => 'views/terms.blade.php', 'lang' => 'blade'],
+            ],
+        ],
     ],
 
 ];
