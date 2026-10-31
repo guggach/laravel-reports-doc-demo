@@ -37,6 +37,15 @@ final class Report extends BaseReport
         return new Source;
     }
 
+    /**
+     * The PDF footer template. Chromium/WeasyPrint replace the pageNumber and
+     * totalPages spans; the HTML preview is unchanged.
+     */
+    public function pdfFooter(): ?string
+    {
+        return view('contract_example::pdf-footer', ['title' => $this->name()])->render();
+    }
+
     public function define(ReportBuilder $r): void
     {
         $r->mode(ReportMode::Flow);

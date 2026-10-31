@@ -156,6 +156,7 @@ return [
                     'Die Allgemeinen Bedingungen starten via break-before: page auf Seite 2',
                     'Lange Klauseln fliessen natürlich über Seitengrenzen',
                     'break-inside: avoid hält einzelne Klauseln zusammen',
+                    'pdfFooter() ergänzt einen PDF-Footer mit pageNumber/totalPages',
                     'Derselbe Vertrag lässt sich als HTML-Vorschau und PDF ausgeben',
                 ],
             ],

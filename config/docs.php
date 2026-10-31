@@ -141,6 +141,7 @@ return [
                 ['path' => 'app/Reports/ContractExample/Source.php', 'label' => 'Source.php', 'lang' => 'php'],
                 ['path' => 'app/Reports/ContractExample/views/contract.blade.php', 'label' => 'views/contract.blade.php', 'lang' => 'blade'],
                 ['path' => 'app/Reports/ContractExample/views/terms.blade.php', 'label' => 'views/terms.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/ContractExample/views/pdf-footer.blade.php', 'label' => 'views/pdf-footer.blade.php', 'lang' => 'blade'],
             ],
         ],
     ],

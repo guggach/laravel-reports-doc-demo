@@ -156,6 +156,7 @@ return [
                     'The general terms start on page 2 via break-before: page',
                     'Long clauses flow naturally across page boundaries',
                     'break-inside: avoid keeps individual clauses together',
+                    'pdfFooter() adds a PDF-only footer with pageNumber/totalPages',
                     'The same contract can be exported as HTML preview and PDF',
                 ],
             ],
