@@ -141,7 +141,7 @@ return [
                 'highlights' => [
                     'freeform() renders one complete form per detail record',
                     'Every section is an <x-reports::page-block> with a declared height',
-                    'The payment slip is a block: it fits on page 1 or moves to page 2 automatically',
+                    'The payment slip is anchored with anchor="bottom": 105 mm from the paper edge, overlaying the footer',
                     'pageNumbering(perForm) restarts the page counter for every invoice',
                     'The page header with invoice number and customer is hidden on page 1',
                     'A block taller than the page body throws a BandOverflowException',

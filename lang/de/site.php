@@ -141,7 +141,7 @@ return [
                 'highlights' => [
                     'freeform() rendert ein vollständiges Formular pro Detail-Datensatz',
                     'Jeder Abschnitt ist ein <x-reports::page-block> mit deklarierter Höhe',
-                    'Der Einzahlungsschein ist ein Block: Er passt auf Seite 1 oder rutscht automatisch auf Seite 2',
+                    'Der Einzahlungsschein ist mit anchor="bottom" verankert: 105 mm ab Papierunterkante, als Layer über dem Footer',
                     'pageNumbering(perForm) startet den Seitenzähler für jede Rechnung neu',
                     'Der Seitenkopf mit Rechnungsnummer und Kunde wird auf Seite 1 ausgeblendet',
                     'Ein Block, der höher als der Seiteninhalt ist, wirft eine BandOverflowException',

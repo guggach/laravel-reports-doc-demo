@@ -60,15 +60,12 @@
     .invoice-note { padding-top: 3mm; font-size: 8px; line-height: 1.5; color: #64748b; }
 
     .payment-slip {
-        border-top: 1px solid #94a3b8;
-        padding-top: 3mm;
         box-sizing: border-box;
         height: 100%;
+        overflow: hidden;
+        background: #fff;
     }
-    .payment-slip__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2mm; }
-    .payment-slip__head strong { font-size: 11px; }
-    .payment-slip__head span { font-size: 8px; color: #64748b; }
-    .payment-slip img { display: block; width: 100%; height: auto; }
+    .payment-slip img { display: block; width: 100%; height: 100%; object-fit: fill; }
 </style>
 </x-reports::page-block>
 
@@ -147,12 +144,8 @@
     </div>
 </x-reports::page-block>
 
-<x-reports::page-block :page="$page" :height="100">
+<x-reports::page-block :page="$page" :height="105" anchor="bottom">
     <div class="payment-slip">
-        <div class="payment-slip__head">
-            <strong>Zahlungsinformationen</strong>
-            <span>Einzahlungsschein · {{ $ctx->invoice_number }}</span>
-        </div>
         <img src="{{ asset('images/docs/swissqr-payment-slip.png') }}" alt="Swiss QR Einzahlungsschein">
     </div>
 </x-reports::page-block>

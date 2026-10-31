@@ -107,7 +107,7 @@ return [
         ],
         [
             'key' => 'invoice_example',
-            'badges' => ['strict', 'form', 'pagination'],
+            'badges' => ['strict', 'freeform', 'pagination'],
             'structure' => implode("\n", [
                 'app/Reports/InvoiceExample/',
                 '├── Report.php              # freeform(), strict, pageNumbering(perForm)',
