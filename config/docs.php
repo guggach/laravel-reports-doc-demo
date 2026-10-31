@@ -28,6 +28,18 @@ return [
             'view' => 'docs.bands',
             'title' => 'site.docs.pages.bands',
         ],
+        'report-definition' => [
+            'view' => 'docs.report-definition',
+            'title' => 'site.docs.pages.report-definition',
+        ],
+        'source' => [
+            'view' => 'docs.source',
+            'title' => 'site.docs.pages.source',
+        ],
+        'groups' => [
+            'view' => 'docs.groups',
+            'title' => 'site.docs.pages.groups',
+        ],
     ],
 
     /*
@@ -142,6 +154,31 @@ return [
                 ['path' => 'app/Reports/ContractExample/views/contract.blade.php', 'label' => 'views/contract.blade.php', 'lang' => 'blade'],
                 ['path' => 'app/Reports/ContractExample/views/terms.blade.php', 'label' => 'views/terms.blade.php', 'lang' => 'blade'],
                 ['path' => 'app/Reports/ContractExample/views/pdf-footer.blade.php', 'label' => 'views/pdf-footer.blade.php', 'lang' => 'blade'],
+            ],
+        ],
+        [
+            'key' => 'database_sources',
+            'badges' => ['flow', 'filters', 'aggregates'],
+            'structure' => implode("\n", [
+                'app/Reports/DatabaseSources/',
+                '├── Report.php              # switch between five source adapters',
+                '└── views/',
+                '    ├── report-start.blade.php',
+                '    ├── grid-head.blade.php',
+                '    ├── row.blade.php',
+                '    └── report-end.blade.php',
+                '',
+                'app/Models/DemoOrder.php',
+                'database/migrations/…_create_demo_orders_table.php',
+            ]),
+            'files' => [
+                ['path' => 'app/Reports/DatabaseSources/Report.php', 'label' => 'Report.php', 'lang' => 'php'],
+                ['path' => 'app/Models/DemoOrder.php', 'label' => 'Models/DemoOrder.php', 'lang' => 'php'],
+                ['path' => 'database/migrations/2026_10_31_000000_create_demo_orders_table.php', 'label' => 'migrations/create_demo_orders_table.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/DatabaseSources/views/report-start.blade.php', 'label' => 'views/report-start.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/DatabaseSources/views/grid-head.blade.php', 'label' => 'views/grid-head.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/DatabaseSources/views/row.blade.php', 'label' => 'views/row.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/DatabaseSources/views/report-end.blade.php', 'label' => 'views/report-end.blade.php', 'lang' => 'blade'],
             ],
         ],
     ],
