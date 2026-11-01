@@ -22,7 +22,15 @@ export default defineConfig({
         // into public/hot (e.g. http://[::1]:5173).
         host: '127.0.0.1',
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: [
+                '**/storage/framework/views/**',
+                // The local `guggach/laravel-reports` path repository is
+                // symlinked into vendor/, and its own vendor/ contains a
+                // self-referencing symlink (testbench's laravel/vendor).
+                // Watching vendor/ makes chokidar follow that loop forever
+                // until Node runs out of memory.
+                '**/vendor/**',
+            ],
         },
     },
 });

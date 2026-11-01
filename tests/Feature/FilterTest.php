@@ -23,6 +23,17 @@ it('filters the internal price list by category', function (): void {
         ->not->toContain('Mixer');
 });
 
+it('filters the internal price list by a text filter', function (): void {
+    $response = $this->get('/reports/internal/price-list?name=Kaffee');
+
+    $content = (string) $response->getContent();
+
+    expect($content)->toContain('Kaffeemaschine')
+        ->not->toContain('Wasserkocher')
+        ->not->toContain('Toaster')
+        ->not->toContain('Mixer');
+});
+
 it('filters the internal price list by price', function (): void {
     $response = $this->get('/reports/internal/price-list?price=129');
 

@@ -20,13 +20,13 @@ final class Source extends ReportSource
             [
                 'invoice_number' => 'R-265040063001',
                 'invoice_date' => '18.09.2026',
-                'customer' => 'BA Contemporary Dance ZHdK',
-                'address' => ['Pfingstweidstrasse 96', '8031 Zürich'],
+                'customer' => 'Example GmbH',
+                'address' => ['Pfingstweidstrasse 1', '8031 Zürich'],
                 'vat_number' => 'CHE-106.833.447 MWST',
                 'due' => 'Fällig bei Erhalt der Rechnung netto',
                 'positions' => [
                     [
-                        'description' => 'Miete Apartment Kategorie City / Gast Shropshire Stephen',
+                        'description' => 'Miete Apartment Kategorie City / Gast Peter Müller',
                         'period' => '01.11.2026 – 21.11.2026',
                         'quantity' => '20 Nächte',
                         'unit_price' => 106.67,
@@ -49,7 +49,7 @@ final class Source extends ReportSource
                 'invoice_number' => 'R-265040063002',
                 'invoice_date' => '18.09.2026',
                 'customer' => 'Alpine Studio GmbH',
-                'address' => ['Seefeldstrasse 12', '8008 Zürich'],
+                'address' => ['Seefeldstrasse 999', '8008 Zürich'],
                 'vat_number' => 'CHE-106.833.447 MWST',
                 'due' => 'Fällig bei Erhalt der Rechnung netto',
                 'positions' => [

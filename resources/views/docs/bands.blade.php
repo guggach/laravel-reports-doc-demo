@@ -158,10 +158,10 @@
             </a>
 
             <a
-                href="{{ route('docs.show', ['page' => 'report-types']) }}"
+                href="{{ route('docs.show', ['page' => 'report-definition']) }}"
                 class="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-300 hover:shadow-sm dark:border-white/10 dark:bg-white/5 dark:hover:border-teal-500/40"
             >
-                <span class="block font-semibold text-slate-900 dark:text-white">{{ __('site.bands.next') }} · {{ __('site.docs.pages.report-types') }}</span>
+                <span class="block font-semibold text-slate-900 dark:text-white">{{ __('site.bands.next') }} · {{ __('site.docs.pages.report-definition') }}</span>
                 <span class="mt-1 block text-sm text-slate-600 dark:text-slate-300">{{ __('site.bands.next_text') }}</span>
             </a>
         </div>

@@ -201,11 +201,13 @@ return [
         'on_this_page' => 'Documentation',
         'pages' => [
             'getting-started' => 'Getting started',
+            'routing' => 'Routing & invocation',
             'report-types' => 'Report types',
             'bands' => 'Bands explained',
             'report-definition' => 'Report definition',
             'source' => 'Data sources',
             'groups' => 'Groups & aggregates',
+            'filters' => 'Filter form',
         ],
     ],
 
@@ -219,7 +221,7 @@ return [
         'step_3' => 'Open the preview',
         'step_3_text' => 'Reports are addressed by their key. The package registers the preview, the document and the PDF route for you.',
         'next' => 'Next',
-        'next_text' => 'Continue with the report types to see how lists, forms and strict reports differ.',
+        'next_text' => 'How to invoke a report from a link or from code, and when the filter form sits in between.',
     ],
 
     'report-types' => [
@@ -233,6 +235,8 @@ return [
         'list_text' => 'A detail band repeated per record, optionally grouped with headers, footers and aggregates.',
         'form_title' => 'Single form',
         'form_text' => 'One form per record, repeated per data set, with its own page counter.',
+        'next' => 'Next',
+        'next_text' => 'See which band runs when — and how the engine repeats the stack across pages.',
     ],
 
     'bands' => [
@@ -603,7 +607,155 @@ return [
 
         'example_link' => 'Open the price list example',
         'example_link_text' => 'See the group, its header, its footer and the subtotal live.',
-        'back' => 'Back',
-        'back_text' => 'Revisit the report class, the builder and the RenderContext.',
+        'back' => 'Next',
+        'back_text' => 'How source fields become a filter form and how to build your own.',
+    ],
+
+    'routing' => [
+        'title' => 'Routing & invocation',
+        'lead' => 'A report is addressed by its key(). The package registers the filter form, preview, document and PDF as separate routes — link them or invoke them directly from code.',
+
+        'routes_title' => 'The report routes',
+        'routes_lead' => 'All routes use the prefix reports by default. The route names stay the same when you change the prefix.',
+        'routes' => [
+            'form' => ['sig' => 'GET /reports/{name} · reports.form', 'text' => 'Filter form. If the report has no filter controls, the route redirects straight to the preview.'],
+            'preview' => ['sig' => 'GET /reports/{name}/run · reports.preview', 'text' => 'Preview page with the frame, zoom, print, PDF and “change filters” link. Filters arrive as query parameters.'],
+            'internal' => ['sig' => 'GET /reports/internal/{name} · reports.internal', 'text' => 'Only the report document as HTML — for your own iframe or an embed without the preview chrome.'],
+            'pdf' => ['sig' => 'GET /reports/{name}/pdf · reports.pdf', 'text' => 'Streams the PDF with the same filters.'],
+            'asset' => ['sig' => 'GET /reports/assets/{file} · reports.asset', 'text' => 'Shared CSS file for the form and the preview. The UI components include it automatically.'],
+        ],
+        'redirect_title' => 'Form first — or straight to the preview',
+        'redirect_text' => 'The link to /reports/{name} shows the filter form first. If there are no filters (empty filterControls()), the route redirects automatically to /reports/{name}/run. To skip the form, link the preview route directly.',
+
+        'flow_title' => 'The flow',
+        'flow_lead' => 'The report is only executed once the filters are fixed. The preview is just the shell; the actual document lives on the internal route.',
+        'flow' => [
+            ['route' => 'reports.form', 'title' => 'Choose filters', 'text' => 'The user fills in the form. The values become query parameters on the form target.'],
+            ['route' => 'reports.preview', 'title' => 'Preview', 'text' => 'The route validates the filters and renders the frame. The iframe loads the document from reports.internal.'],
+            ['route' => 'reports.internal · reports.pdf', 'title' => 'Document or PDF', 'text' => 'Same filters, two outputs: HTML for embedding or a streamed PDF.'],
+        ],
+
+        'links_title' => 'Generating links',
+        'links_lead' => 'Use the route names instead of hard-coded paths. That keeps you independent of the configured prefix.',
+        'links_caption' => 'Four typical links: form, preview, embedded document and PDF.',
+        'collision_title' => 'Careful: a filter field called “name”',
+        'collision_text' => 'The route has a {name} parameter for the report key. A filter field keyed name would overwrite the report key with route(..., ["name" => ...] + $filters). Always append filters as their own query string: route(...)."?".http_build_query($filters). The package routes do the same internally.',
+
+        'query_title' => 'Filters as query parameters',
+        'query_lead' => 'The package routes accept the same shapes the automatic form produces. Unknown keys are dropped.',
+        'query' => [
+            'simple' => ['sig' => '?category=Küche', 'text' => 'Single value. The default operator of the control is used.'],
+            'list' => ['sig' => '?category[]=Küche&category[]=Büro', 'text' => 'Multiple values for multiselect and picker.'],
+            'operator' => ['sig' => '?price[operator]=>=&price[value][]=50', 'text' => 'Explicit operator with one value.'],
+            'between' => ['sig' => '?price[operator]=between&price[value][]=50&price[value][]=100', 'text' => 'Range with two values.'],
+            'text' => ['sig' => '?name[operator]=like&name[value]=Kaffee', 'text' => 'Text filter. Without an operator, like is used and the value is wrapped in %.'],
+            'unknown' => ['sig' => '?foo=bar', 'text' => 'Unknown keys are silently dropped by the FilterValidator.'],
+        ],
+
+        'code_title' => 'Invoking from code',
+        'code_lead' => 'The Reports facade accepts the same report key and filter arrays. html() returns the complete document as a string; pdf() returns a fluent PDF builder.',
+        'code_methods' => [
+            'html' => ['sig' => 'Reports::html($report, $filters = [])', 'text' => 'Complete HTML document as a string — ideal for your own controllers or embeds.'],
+            'render' => ['sig' => 'Reports::render($report, $filters = [])', 'text' => 'Same pipeline; the configured renderer determines the return type.'],
+            'pdf' => ['sig' => 'Reports::pdf($report, $filters = [])', 'text' => 'PdfBuilder with stream(), download(), save(), name() and disk().'],
+            'filter_controls' => ['sig' => 'Reports::filterControls($report)', 'text' => 'A list of FilterControl objects for your own filter UI.'],
+            'filter_schema' => ['sig' => 'Reports::filterSchema($report)', 'text' => 'The same controls as JSON-ready arrays.'],
+            'find' => ['sig' => 'Reports::find($key)', 'text' => 'Resolve a report instance by its key().'],
+            'registry' => ['sig' => 'Reports::all() · register() · resolve()', 'text' => 'Read the registry, register reports or pass an instance through.'],
+            'definition' => ['sig' => 'Reports::definition($report) · pageSetup($report)', 'text' => 'The resolved ReportDefinition and effective page setup.'],
+        ],
+        'code_caption' => 'Render a report from a controller or deliver it as a PDF.',
+
+        'config_title' => 'Prefix, middleware and protection',
+        'config_lead' => 'The routes are enabled by default and run in the web middleware group. Add authentication or a policy for production.',
+        'config_caption' => 'Adjust routing in config/reports.php.',
+        'config_note' => 'reports.routes.prefix changes only the path, not the route names (reports.form, reports.preview, reports.internal, reports.pdf, reports.asset). Setting reports.routes.enabled = false disables the routes entirely; then call Reports::html()/pdf() from your own controllers.',
+
+        'next' => 'Next',
+        'next_text' => 'How lists, forms and strict reports use the same routes and bands.',
+    ],
+
+    'filters' => [
+        'title' => 'Filter form',
+        'lead' => 'The package builds a filter form from a source’s fields. Input is validated, passed to the preview as query parameters and applied by the source as a WHERE clause or an in-memory filter.',
+
+        'how_title' => 'How the form is built',
+        'how_lead' => 'Without a custom filterControls(), one control is created per filterable ReportField. The reports.form route renders it; “Continue” sends the values to reports.preview.',
+        'how' => [
+            'source' => ['sig' => 'ReportSource::fields()', 'text' => 'ReportField[] is the allow-list. Only filterable fields appear in the form.'],
+            'controls' => ['sig' => 'Report::filterControls()', 'text' => 'Optional override. Default: FilterBuilder::for($this->source())->build().'],
+            'schema' => ['sig' => 'Reports::filterSchema($report)', 'text' => 'Serialised control list for your own UI (Blade, Vue, React).'],
+            'route' => ['sig' => 'GET /reports/{name}', 'text' => 'Renders the form. Without controls, the route redirects to /run.'],
+        ],
+        'no_controls_title' => 'No filters? No form.',
+        'no_controls_text' => 'If every field has filterable: false or the source has no fields, filterControls() is empty. The form route then redirects straight to the preview. That is not an error — it is the intended one-click case.',
+
+        'demo_title' => 'Try it live',
+        'demo_lead' => 'This is the real, automatically generated price list form. “Continue” validates the values and opens the preview.',
+        'demo_frame_title' => 'Automatic filter form (price list)',
+        'demo_note' => 'The iframe shows the form route. After submitting, it navigates to the preview inside the iframe; “Open preview” starts it in a new tab.',
+
+        'fields_title' => 'The filter fields',
+        'fields_lead' => 'The field type determines the widget, operators and query format. FilterBuilder can override all three per field.',
+        'fields' => [
+            'text' => ['sig' => 'ReportField(type: \'string\')', 'text' => 'Text field. Operators: like, =, !=. Query: ?name=Kaffee or ?name[operator]=like&name[value]=Kaffee. Use multiple() for several rows.'],
+            'number' => ['sig' => '\'number\' · \'int\' · \'integer\' · \'decimal\' · \'float\'', 'text' => 'Number field with an operator select. Operators: =, !=, <, <=, >, >=, between, in. Query: ?price[operator]=between&price[value][]=50&price[value][]=100.'],
+            'date' => ['sig' => '\'date\' · \'datetime\'', 'text' => 'Date field with =, before, after, between, is_null. Query with an ISO date: ?released_at[operator]=after&released_at[value][]=2026-01-01.'],
+            'boolean' => ['sig' => '\'boolean\' · \'bool\'', 'text' => 'Yes/no select. Query: ?active=1 (yes) or ?active=0 (no).'],
+            'select' => ['sig' => '\'enum\' with up to 6 options', 'text' => 'Simple select. Query: ?category=Küche. Internally the in operator is used.'],
+            'multiselect' => ['sig' => '\'enum\' with more than 6 options or ->multiselect()', 'text' => 'Collapsible checkbox list. Query: ?category[]=Küche&category[]=Büro.'],
+            'picker' => ['sig' => '\'id\' · \'fk\' · \'relation\'', 'text' => 'Searchable dual-list picker. Query: ?supplier[]=1&supplier[]=2.'],
+            'json' => ['sig' => '\'json\'', 'text' => 'Text control without a value for is_null and is_not_null.'],
+        ],
+
+        'query_title' => 'Filters as query parameters',
+        'query_lead' => 'The form submits with GET. You can build the same URLs yourself — for deep links, emails or a custom form.',
+        'query_caption' => 'The query formats produced by the automatic form.',
+
+        'apply_title' => 'How the filters are applied',
+        'apply_lead' => 'The FilterValidator sits between the form and the report. It only lets known controls through and normalises the operator and value.',
+        'apply' => [
+            'validator' => ['sig' => 'FilterValidator', 'text' => 'Allow-list from filterControls(): unknown keys are dropped, values are normalised per operator (scalar, between array, in list, like pattern).'],
+            'bag' => ['sig' => 'FilterBag', 'text' => 'The normalised result is passed to the source via withFilters().'],
+            'sql' => ['sig' => 'DatabaseSource', 'text' => 'Eloquent and the query builder translate filters into WHERE and sorting into ORDER BY.'],
+            'memory' => ['sig' => 'ArraySource · CollectionSource · RawSqlSource', 'text' => 'These sources filter in PHP after loading; they use the same operators.'],
+            'context' => ['sig' => '$ctx->filters', 'text' => 'The active filters inside a band. Through the package routes the values are normalised: ["operator" => "in", "value" => ["Küche"]].'],
+        ],
+        'apply_note' => 'Direct code calls such as Reports::html($report, $filters) bypass the FilterValidator. There only the source’s field allow-list and the default operator apply; validate your own input first.',
+
+        'manual_title' => 'Building your own form',
+        'manual_lead' => 'You can point your own form at the package routes or write your own controller. The form only needs the right field names and the right action.',
+        'form_category' => 'Category',
+        'form_all' => 'All categories',
+        'form_name' => 'Description',
+        'form_name_placeholder' => 'e.g. coffee',
+        'form_operator' => 'Price operator',
+        'form_between' => 'between',
+        'form_from' => 'from',
+        'form_to' => 'to',
+        'form_submit' => 'Open preview',
+        'form_pdf' => 'Open as PDF',
+        'form_reset' => 'Reset',
+        'manual_caption' => 'The same form as Blade markup and as a custom controller.',
+
+        'customize_title' => 'Customising the automatic form',
+        'customize_lead' => 'Override filterControls() in the report class and adjust individual fields with the FilterBuilder. Everything else stays automatic.',
+        'customize' => [
+            'field' => ['sig' => '->field(\'price\')', 'text' => 'Selects a field for the following customisations.'],
+            'control' => ['sig' => '->control(\'number\')', 'text' => 'Overrides the widget: text, number, boolean, select, multiselect, date or picker.'],
+            'operators' => ['sig' => '->operators([...])', 'text' => 'Restricts or extends the operators; the first one becomes the default.'],
+            'options' => ['sig' => '->options([...])', 'text' => 'Values for select, multiselect or picker.'],
+            'multiple' => ['sig' => '->multiple()', 'text' => 'Allows multiple values.'],
+            'picker' => ['sig' => '->picker(...)', 'text' => 'Turns an ID/FK field into a searchable picker.'],
+            'only_except' => ['sig' => '->only([...]) · ->except([...])', 'text' => 'Keep or remove specific controls.'],
+            'build' => ['sig' => '->build()', 'text' => 'Returns the finished list of FilterControl objects.'],
+        ],
+        'customize_caption' => 'Customise three fields and let the rest be generated automatically.',
+        'customize_note' => 'The full reference for FilterBuilder, operators and field types is on the Data sources page. For a completely custom form you only need filterControls() if you want to keep using the package routes or the FilterValidator.',
+
+        'back_routing' => 'Back',
+        'back_routing_text' => 'Revisit the routing model with form, preview, document and PDF.',
+        'back_source' => 'Back',
+        'back_source_text' => 'Field types, FilterBuilder and how filters are applied in the source.',
     ],
 ];

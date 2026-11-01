@@ -20,6 +20,10 @@ return [
             'view' => 'docs.getting-started',
             'title' => 'site.docs.pages.getting-started',
         ],
+        'routing' => [
+            'view' => 'docs.routing',
+            'title' => 'site.docs.pages.routing',
+        ],
         'report-types' => [
             'view' => 'docs.report-types',
             'title' => 'site.docs.pages.report-types',
@@ -39,6 +43,10 @@ return [
         'groups' => [
             'view' => 'docs.groups',
             'title' => 'site.docs.pages.groups',
+        ],
+        'filters' => [
+            'view' => 'docs.filters',
+            'title' => 'site.docs.pages.filters',
         ],
     ],
 

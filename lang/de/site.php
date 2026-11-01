@@ -201,11 +201,13 @@ return [
         'on_this_page' => 'Dokumentation',
         'pages' => [
             'getting-started' => 'Erste Schritte',
+            'routing' => 'Routing & Aufruf',
             'report-types' => 'Report-Arten',
             'bands' => 'Bänder erklärt',
             'report-definition' => 'Report-Definition',
             'source' => 'Datenquellen',
             'groups' => 'Gruppen & Aggregate',
+            'filters' => 'Filterformular',
         ],
     ],
 
@@ -219,7 +221,7 @@ return [
         'step_3' => 'Vorschau öffnen',
         'step_3_text' => 'Reports werden über ihren Key angesprochen. Die Vorschau-, Dokument- und PDF-Route registriert das Paket für dich.',
         'next' => 'Weiter',
-        'next_text' => 'Bei den Report-Arten siehst du, wie sich Listen, Formulare und Strict-Reports unterscheiden.',
+        'next_text' => 'Wie du einen Report per Link oder aus dem Code aufrufst und wann das Filterformular dazwischenliegt.',
     ],
 
     'report-types' => [
@@ -233,6 +235,8 @@ return [
         'list_text' => 'Ein Detailband, das pro Datensatz wiederholt wird, optional gruppiert mit Kopf, Fuss und Aggregaten.',
         'form_title' => 'Einzelformular',
         'form_text' => 'Ein Formular pro Datensatz, bei mehreren Datensätzen wiederholt, mit eigenem Seitenzähler.',
+        'next' => 'Weiter',
+        'next_text' => 'Sieh dir an, welches Band wann läuft — und wie die Engine den Stapel über Seiten hinweg wiederholt.',
     ],
 
     'bands' => [
@@ -603,7 +607,155 @@ return [
 
         'example_link' => 'Preislisten-Beispiel öffnen',
         'example_link_text' => 'Die Gruppe, ihr Kopf, ihr Fuss und die Zwischensumme live ansehen.',
-        'back' => 'Zurück',
-        'back_text' => 'Nochmals die Report-Klasse, der Builder und der RenderContext.',
+        'back' => 'Weiter',
+        'back_text' => 'Wie aus den Source-Feldern ein Filterformular wird und wie du es selbst baust.',
+    ],
+
+    'routing' => [
+        'title' => 'Routing & Aufruf',
+        'lead' => 'Ein Report wird über seinen key() adressiert. Das Paket registriert Filterformular, Vorschau, Dokument und PDF als eigene Routen — du kannst sie verlinken oder direkt aus dem Code aufrufen.',
+
+        'routes_title' => 'Die Report-Routen',
+        'routes_lead' => 'Alle Routen tragen standardmässig das Präfix reports. Die Route-Namen bleiben gleich, auch wenn du das Präfix änderst.',
+        'routes' => [
+            'form' => ['sig' => 'GET /reports/{name} · reports.form', 'text' => 'Filterformular. Existieren keine Filter-Controls, leitet die Route direkt zur Vorschau weiter.'],
+            'preview' => ['sig' => 'GET /reports/{name}/run · reports.preview', 'text' => 'Vorschau-Seite mit Frame, Zoom, Drucken, PDF- und «Filter ändern»-Link. Die Filter kommen als Query-Parameter.'],
+            'internal' => ['sig' => 'GET /reports/internal/{name} · reports.internal', 'text' => 'Nur das Report-Dokument als HTML — für ein eigenes iframe oder eine Einbettung ohne Vorschau-Chrome.'],
+            'pdf' => ['sig' => 'GET /reports/{name}/pdf · reports.pdf', 'text' => 'Streamt das PDF mit denselben Filtern.'],
+            'asset' => ['sig' => 'GET /reports/assets/{file} · reports.asset', 'text' => 'Gemeinsame CSS-Datei für Formular und Vorschau. Die UI-Komponenten binden sie automatisch ein.'],
+        ],
+        'redirect_title' => 'Formular zuerst — oder direkt zur Vorschau',
+        'redirect_text' => 'Der Link auf /reports/{name} zeigt zuerst das Filterformular. Gibt es keine Filter (leere filterControls()), macht die Route automatisch einen Redirect auf /reports/{name}/run. Für einen direkten Sprung ohne Formular verlinkst du die preview-Route.',
+
+        'flow_title' => 'Der Ablauf',
+        'flow_lead' => 'Der Report wird erst ausgeführt, wenn die Filter feststehen. Die Vorschau ist nur die Hülle; das eigentliche Dokument liegt auf der internal-Route.',
+        'flow' => [
+            ['route' => 'reports.form', 'title' => 'Filter wählen', 'text' => 'Der User füllt das Formular aus. Die Werte landen als Query-Parameter am Formular-Ziel.'],
+            ['route' => 'reports.preview', 'title' => 'Vorschau', 'text' => 'Die Route validiert die Filter und rendert den Frame. Das iframe lädt das Dokument von reports.internal.'],
+            ['route' => 'reports.internal · reports.pdf', 'title' => 'Dokument oder PDF', 'text' => 'Dieselben Filter, zwei Ausgaben: HTML für die Einbettung oder ein gestreamtes PDF.'],
+        ],
+
+        'links_title' => 'Links erzeugen',
+        'links_lead' => 'Verwende die Route-Namen statt hartcodierter Pfade. So bleibst du unabhängig vom konfigurierten Präfix.',
+        'links_caption' => 'Vier typische Links: Formular, Vorschau, eingebettetes Dokument und PDF.',
+        'collision_title' => 'Achtung: Filterfeld «name»',
+        'collision_text' => 'Die Route hat einen Parameter {name} für den Report-Key. Ein Filterfeld mit dem Key name würde bei route(..., ["name" => ...] + $filters) den Report-Key überschreiben. Hänge Filter deshalb immer als eigenen Query-String an: route(...)."?".http_build_query($filters). Die Paket-Routen machen das intern genauso.',
+
+        'query_title' => 'Filter als Query-Parameter',
+        'query_lead' => 'Die Paket-Routen akzeptieren dieselben Formen, die auch das automatische Formular erzeugt. Unbekannte Keys werden verworfen.',
+        'query' => [
+            'simple' => ['sig' => '?category=Küche', 'text' => 'Einfacher Wert. Der Default-Operator des Controls wird verwendet.'],
+            'list' => ['sig' => '?category[]=Küche&category[]=Büro', 'text' => 'Mehrere Werte für Multiselect und Picker.'],
+            'operator' => ['sig' => '?price[operator]=>=&price[value][]=50', 'text' => 'Expliziter Operator mit einem Wert.'],
+            'between' => ['sig' => '?price[operator]=between&price[value][]=50&price[value][]=100', 'text' => 'Bereich mit zwei Werten.'],
+            'text' => ['sig' => '?name[operator]=like&name[value]=Kaffee', 'text' => 'Textfilter. Ohne Operator wird like verwendet und der Wert mit % umschlossen.'],
+            'unknown' => ['sig' => '?foo=bar', 'text' => 'Unbekannte Keys werden vom FilterValidator still verworfen.'],
+        ],
+
+        'code_title' => 'Aus dem Code aufrufen',
+        'code_lead' => 'Die Reports-Fassade nimmt denselben Report-Key und dieselben Filter-Arrays. html() liefert das vollständige Dokument als String; pdf() gibt einen fluenten PDF-Builder zurück.',
+        'code_methods' => [
+            'html' => ['sig' => 'Reports::html($report, $filters = [])', 'text' => 'Vollständiges HTML-Dokument als String — ideal für eigene Controller oder Einbettungen.'],
+            'render' => ['sig' => 'Reports::render($report, $filters = [])', 'text' => 'Gleiche Pipeline; der konfigurierte Renderer bestimmt den Rückgabetyp.'],
+            'pdf' => ['sig' => 'Reports::pdf($report, $filters = [])', 'text' => 'PdfBuilder mit stream(), download(), save(), name() und disk().'],
+            'filter_controls' => ['sig' => 'Reports::filterControls($report)', 'text' => 'Liste von FilterControl-Objekten für eine eigene Filter-UI.'],
+            'filter_schema' => ['sig' => 'Reports::filterSchema($report)', 'text' => 'Dieselben Controls als JSON-fähige Arrays.'],
+            'find' => ['sig' => 'Reports::find($key)', 'text' => 'Report-Instanz anhand des key() auflösen.'],
+            'registry' => ['sig' => 'Reports::all() · register() · resolve()', 'text' => 'Registry lesen, Reports registrieren oder eine Instanz durchreichen.'],
+            'definition' => ['sig' => 'Reports::definition($report) · pageSetup($report)', 'text' => 'Aufgelöste ReportDefinition und effektive Seiteneinrichtung.'],
+        ],
+        'code_caption' => 'Einen Report aus einem Controller rendern oder als PDF ausliefern.',
+
+        'config_title' => 'Präfix, Middleware und Schutz',
+        'config_lead' => 'Die Routen sind standardmässig aktiv und laufen in der web-Middleware-Gruppe. Für Produktion solltest du Authentifizierung oder eine Policy ergänzen.',
+        'config_caption' => 'Routing in config/reports.php anpassen.',
+        'config_note' => 'reports.routes.prefix ändert nur den Pfad, nicht die Route-Namen (reports.form, reports.preview, reports.internal, reports.pdf, reports.asset). Mit reports.routes.enabled = false schaltest du die Routen komplett ab; dann rufst du Reports::html()/pdf() aus eigenen Controllern auf.',
+
+        'next' => 'Weiter',
+        'next_text' => 'Wie Listen, Formulare und Strict-Reports dieselben Routen und Bänder nutzen.',
+    ],
+
+    'filters' => [
+        'title' => 'Filterformular',
+        'lead' => 'Aus den Feldern einer Source erzeugt das Paket ein Filterformular. Die Eingaben werden validiert, als Query-Parameter an die Vorschau übergeben und von der Source als WHERE-Klausel oder In-Memory-Filter angewendet.',
+
+        'how_title' => 'So entsteht das Formular',
+        'how_lead' => 'Ohne eigenes filterControls() wird pro filterbarem ReportField ein Control erzeugt. Die Route reports.form rendert es; nach «Weiter» geht es an reports.preview.',
+        'how' => [
+            'source' => ['sig' => 'ReportSource::fields()', 'text' => 'ReportField[] ist die Allow-List. Nur filterbare Felder erscheinen im Formular.'],
+            'controls' => ['sig' => 'Report::filterControls()', 'text' => 'Optionaler Override. Default: FilterBuilder::for($this->source())->build().'],
+            'schema' => ['sig' => 'Reports::filterSchema($report)', 'text' => 'Serialisierte Control-Liste für eigene UIs (Blade, Vue, React).'],
+            'route' => ['sig' => 'GET /reports/{name}', 'text' => 'Rendert das Formular. Ohne Controls macht die Route einen Redirect auf /run.'],
+        ],
+        'no_controls_title' => 'Keine Filter? Kein Formular.',
+        'no_controls_text' => 'Sind alle Felder filterable: false oder gibt es keine Source-Felder, ist filterControls() leer. Die form-Route leitet dann direkt auf die Vorschau weiter. Das ist kein Fehler, sondern der gewünschte Ein-Klick-Fall.',
+
+        'demo_title' => 'Live ausprobieren',
+        'demo_lead' => 'Das ist das echte, automatisch erzeugte Formular der Preisliste. «Weiter» validiert die Werte und öffnet die Vorschau.',
+        'demo_frame_title' => 'Automatisches Filterformular (Preisliste)',
+        'demo_note' => 'Das iframe zeigt die Formular-Route. Nach dem Absenden läuft es im iframe in die Vorschau; mit «Vorschau öffnen» startest du sie in einem neuen Tab.',
+
+        'fields_title' => 'Die Filter-Felder',
+        'fields_lead' => 'Der Feldtyp bestimmt Widget, Operatoren und Query-Format. Über FilterBuilder lassen sich alle drei pro Feld überschreiben.',
+        'fields' => [
+            'text' => ['sig' => 'ReportField(type: \'string\')', 'text' => 'Textfeld. Operatoren: like, =, !=. Query: ?name=Kaffee oder ?name[operator]=like&name[value]=Kaffee. Mit multiple() mehrere Zeilen.'],
+            'number' => ['sig' => '\'number\' · \'int\' · \'integer\' · \'decimal\' · \'float\'', 'text' => 'Zahlenfeld mit Operator-Select. Operatoren: =, !=, <, <=, >, >=, between, in. Query: ?price[operator]=between&price[value][]=50&price[value][]=100.'],
+            'date' => ['sig' => '\'date\' · \'datetime\'', 'text' => 'Datumsfeld mit =, before, after, between, is_null. Query mit ISO-Datum: ?released_at[operator]=after&released_at[value][]=2026-01-01.'],
+            'boolean' => ['sig' => '\'boolean\' · \'bool\'', 'text' => 'Ja/Nein-Select. Query: ?active=1 (Ja) oder ?active=0 (Nein).'],
+            'select' => ['sig' => '\'enum\' mit höchstens 6 Optionen', 'text' => 'Einfaches Select. Query: ?category=Küche. Intern wird der Operator in verwendet.'],
+            'multiselect' => ['sig' => '\'enum\' mit mehr als 6 Optionen oder ->multiselect()', 'text' => 'Aufklappbare Checkbox-Liste. Query: ?category[]=Küche&category[]=Büro.'],
+            'picker' => ['sig' => '\'id\' · \'fk\' · \'relation\'', 'text' => 'Suchbarer Dual-List-Picker. Query: ?supplier[]=1&supplier[]=2.'],
+            'json' => ['sig' => '\'json\'', 'text' => 'Text-Control ohne Wert für is_null und is_not_null.'],
+        ],
+
+        'query_title' => 'Filter als Query-Parameter',
+        'query_lead' => 'Das Formular submitted per GET. Du kannst dieselben URLs auch selbst bauen — etwa für Deeplinks, E-Mails oder ein eigenes Formular.',
+        'query_caption' => 'Die Query-Formate, die das automatische Formular erzeugt.',
+
+        'apply_title' => 'Wie die Filter angewendet werden',
+        'apply_lead' => 'Zwischen Formular und Report liegt der FilterValidator. Er lässt nur bekannte Controls durch und normalisiert Operator und Wert.',
+        'apply' => [
+            'validator' => ['sig' => 'FilterValidator', 'text' => 'Allow-List aus filterControls(): unbekannte Keys werden verworfen, Werte pro Operator normalisiert (Skalar, between-Array, in-Liste, like-Muster).'],
+            'bag' => ['sig' => 'FilterBag', 'text' => 'Das normalisierte Ergebnis wird der Source über withFilters() übergeben.'],
+            'sql' => ['sig' => 'DatabaseSource', 'text' => 'Eloquent und Query Builder übersetzen die Filter in WHERE und die Sortierung in ORDER BY.'],
+            'memory' => ['sig' => 'ArraySource · CollectionSource · RawSqlSource', 'text' => 'Diese Quellen filtern nach dem Laden in PHP; sie nutzen dieselben Operatoren.'],
+            'context' => ['sig' => '$ctx->filters', 'text' => 'Die aktiven Filter im Band. Über die Paket-Routen sind Werte normalisiert: ["operator" => "in", "value" => ["Küche"]].'],
+        ],
+        'apply_note' => 'Direkte Code-Aufrufe wie Reports::html($report, $filters) umgehen den FilterValidator. Dort gelten nur die Feld-Allow-List der Source und der Default-Operator; validiere eigene Eingaben vorher selbst.',
+
+        'manual_title' => 'Ein eigenes Formular bauen',
+        'manual_lead' => 'Du kannst die Paket-Routen mit einem eigenen Formular ansprechen oder einen eigenen Controller schreiben. Das Formular braucht nur die richtigen Feldnamen und die passende Action.',
+        'form_category' => 'Kategorie',
+        'form_all' => 'Alle Kategorien',
+        'form_name' => 'Bezeichnung',
+        'form_name_placeholder' => 'z. B. Kaffee',
+        'form_operator' => 'Preis-Operator',
+        'form_between' => 'zwischen',
+        'form_from' => 'von',
+        'form_to' => 'bis',
+        'form_submit' => 'Vorschau öffnen',
+        'form_pdf' => 'Als PDF öffnen',
+        'form_reset' => 'Zurücksetzen',
+        'manual_caption' => 'Dasselbe Formular als Blade-Markup und als eigener Controller.',
+
+        'customize_title' => 'Das automatische Formular anpassen',
+        'customize_lead' => 'Override filterControls() in der Report-Klasse und ändere einzelne Felder mit dem FilterBuilder. Alles andere bleibt automatisch.',
+        'customize' => [
+            'field' => ['sig' => '->field(\'price\')', 'text' => 'Wählt ein Feld für die folgenden Anpassungen.'],
+            'control' => ['sig' => '->control(\'number\')', 'text' => 'Überschreibt das Widget: text, number, boolean, select, multiselect, date oder picker.'],
+            'operators' => ['sig' => '->operators([...])', 'text' => 'Schränkt die Operatoren ein oder erweitert sie; der erste wird zum Default.'],
+            'options' => ['sig' => '->options([...])', 'text' => 'Werte für Select, Multiselect oder Picker.'],
+            'multiple' => ['sig' => '->multiple()', 'text' => 'Erlaubt mehrere Werte.'],
+            'picker' => ['sig' => '->picker(...)', 'text' => 'Macht ein ID-/FK-Feld zum suchbaren Picker.'],
+            'only_except' => ['sig' => '->only([...]) · ->except([...])', 'text' => 'Controls gezielt behalten oder entfernen.'],
+            'build' => ['sig' => '->build()', 'text' => 'Liefert die fertige Liste von FilterControl-Objekten.'],
+        ],
+        'customize_caption' => 'Drei Felder anpassen und den Rest automatisch erzeugen lassen.',
+        'customize_note' => 'Die vollständige Referenz zu FilterBuilder, Operatoren und Feldtypen steht unter Datenquellen. Für ein komplett eigenes Formular brauchst du filterControls() nur, wenn du die Paket-Routen oder den FilterValidator weiterverwenden willst.',
+
+        'back_routing' => 'Zurück',
+        'back_routing_text' => 'Nochmals das Routing-Modell mit Formular, Vorschau, Dokument und PDF.',
+        'back_source' => 'Zurück',
+        'back_source_text' => 'Feldtypen, FilterBuilder und die Anwendung in der Source.',
     ],
 ];
