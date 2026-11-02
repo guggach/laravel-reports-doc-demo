@@ -189,6 +189,33 @@ return [
                 ['path' => 'app/Reports/DatabaseSources/views/report-end.blade.php', 'label' => 'views/report-end.blade.php', 'lang' => 'blade'],
             ],
         ],
+        [
+            'key' => 'multilanguage',
+            'badges' => ['flow', 'i18n', 'aggregates'],
+            'structure' => implode("\n", [
+                'app/Reports/Multilanguage/',
+                '├── Report.php              # locale-aware report',
+                '├── Source.php              # language-neutral demo rows',
+                '├── lang/',
+                '│   ├── de/report.php',
+                '│   └── en/report.php',
+                '└── views/',
+                '    ├── report-start.blade.php',
+                '    ├── grid-head.blade.php',
+                '    ├── row.blade.php',
+                '    └── report-end.blade.php',
+            ]),
+            'files' => [
+                ['path' => 'app/Reports/Multilanguage/Report.php', 'label' => 'Report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/Multilanguage/Source.php', 'label' => 'Source.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/Multilanguage/lang/de/report.php', 'label' => 'lang/de/report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/Multilanguage/lang/en/report.php', 'label' => 'lang/en/report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/Multilanguage/views/report-start.blade.php', 'label' => 'views/report-start.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/Multilanguage/views/grid-head.blade.php', 'label' => 'views/grid-head.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/Multilanguage/views/row.blade.php', 'label' => 'views/row.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/Multilanguage/views/report-end.blade.php', 'label' => 'views/report-end.blade.php', 'lang' => 'blade'],
+            ],
+        ],
     ],
 
 ];

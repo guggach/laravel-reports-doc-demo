@@ -96,6 +96,7 @@ return [
             'nup' => 'N-up',
             'form' => 'Form',
             'freeform' => 'Free-form',
+            'i18n' => 'Language',
         ],
         'items' => [
             'price_list' => [
@@ -170,6 +171,18 @@ return [
                     'RawSqlSource, CollectionSource and ArraySource filter and sort in memory',
                     'The source selector is a normal typed filter control',
                     'Report start/end bands show the active adapter and the aggregated totals',
+                ],
+            ],
+            'multilanguage' => [
+                'title' => 'Multilingual price list',
+                'tagline' => 'Pick language and format in the frame header',
+                'description' => 'Switch the language directly in the preview header. Report texts come from the module lang directory; dates and numbers follow the format locale, while the currency stays CHF.',
+                'highlights' => [
+                    'Language selection in the report frame header',
+                    'Module translations under app/Reports/Multilanguage/lang',
+                    'Dates and numbers follow the format locale (de_CH vs. en_US)',
+                    'The currency stays CHF independently of the language',
+                    'The switch applies to HTML preview and PDF',
                 ],
             ],
         ],
