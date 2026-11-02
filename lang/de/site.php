@@ -97,6 +97,7 @@ return [
             'form' => 'Formular',
             'freeform' => 'Free-form',
             'i18n' => 'Sprache',
+            'enrichment' => 'Enrichment',
         ],
         'items' => [
             'price_list' => [
@@ -184,6 +185,19 @@ return [
                     'Datum und Zahlen folgen der Format-Locale (de_CH vs. en_US)',
                     'Die Währung bleibt unabhängig von der Sprache CHF',
                     'Der Wechsel wirkt auf HTML-Vorschau und PDF',
+                ],
+            ],
+            'group_enrichment' => [
+                'title' => 'Gruppierter Umsatz mit Enrichment',
+                'tagline' => 'Gruppendaten aus einem Eloquent-Model',
+                'description' => 'Die Detailzeilen kommen aus demo_orders. Jeder Gruppenkopf lädt Kategoriename und Ziel über enrichWith() aus dem Eloquent-Model demo_categories; der Name wird pro Sprache über einen Accessor aufgelöst.',
+                'highlights' => [
+                    'enrichWith() läuft genau einmal pro Gruppe, nicht pro Detailzeile',
+                    'Die Gruppenschlüssel werden als Filter an die Enrichment-Source übergeben',
+                    'Eloquent liefert das übersetzte Attribut, weil die Engine app()->getLocale() gesetzt hat',
+                    'Die Gruppendaten stehen als $ctx->groupData() im Kopf- und Fuss-Band bereit',
+                    'Gruppen-Aggregat über $r->aggregate(..., scope: "group:1")',
+                    'Sprachwechsel im Frame-Header wirkt auf Kategorienamen und Zahlenformat',
                 ],
             ],
         ],
