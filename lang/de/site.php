@@ -180,6 +180,7 @@ return [
                 'highlights' => [
                     'Sprachwahl im Header des Report-Frames',
                     'Modul-eigene Übersetzungen unter app/Reports/Multilanguage/lang',
+                    'Produkt-, Kategorie- und Status-Texte kommen als Sprach-Arrays aus der Source (wie Spatie Translatable)',
                     'Datum und Zahlen folgen der Format-Locale (de_CH vs. en_US)',
                     'Die Währung bleibt unabhängig von der Sprache CHF',
                     'Der Wechsel wirkt auf HTML-Vorschau und PDF',

@@ -15,15 +15,6 @@ return [
         'status' => 'Status',
         'price' => 'Price',
     ],
-    'category' => [
-        'rent' => 'Rent',
-        'service' => 'Service',
-        'sale' => 'Sale',
-    ],
-    'status' => [
-        'active' => 'Active',
-        'draft' => 'Draft',
-    ],
     'summary' => [
         'positions' => 'Positions',
         'total' => 'Total',

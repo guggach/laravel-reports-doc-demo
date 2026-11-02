@@ -15,15 +15,6 @@ return [
         'status' => 'Status',
         'price' => 'Preis',
     ],
-    'category' => [
-        'rent' => 'Miete',
-        'service' => 'Service',
-        'sale' => 'Verkauf',
-    ],
-    'status' => [
-        'active' => 'Aktiv',
-        'draft' => 'Entwurf',
-    ],
     'summary' => [
         'positions' => 'Positionen',
         'total' => 'Gesamttotal',

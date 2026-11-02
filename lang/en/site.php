@@ -180,6 +180,7 @@ return [
                 'highlights' => [
                     'Language selection in the report frame header',
                     'Module translations under app/Reports/Multilanguage/lang',
+                    'Product, category and status texts come from language arrays in the source (like Spatie Translatable)',
                     'Dates and numbers follow the format locale (de_CH vs. en_US)',
                     'The currency stays CHF independently of the language',
                     'The switch applies to HTML preview and PDF',
