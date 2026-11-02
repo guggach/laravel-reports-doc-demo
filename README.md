@@ -1,58 +1,224 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Reports — Documentation & Demo
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel application that documents and demonstrates
+[`guggach/laravel-reports`](https://github.com/guggach/laravel-reports):
+print-ready reports built with PHP and Blade, with band control, strict
+pagination, free-form invoices, database sources, filters, aggregates and
+locale-aware formatting.
 
-## About Laravel
+![Grouped price list report](docs/Example-price-list.png)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> The package is under active development. The demo tracks the current
+> `main` branch of the package and is not a stable release.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## What is inside
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- A localized documentation site (English by default, German under `/de`)
+- 8 runnable example reports, each with source code and a live preview
+- A live filter form, HTML preview frame, and PDF output
+- Examples for Flow, Strict, N-up, free-form, database sources, and i18n
+- A group-enrichment example using an Eloquent model with translated data
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3 or newer
+- Composer 2
+- Node.js 20 or newer and npm
+- SQLite (the demo uses a local SQLite database)
+- Chromium for PDF generation (Playwright-managed, or set
+  `LARAVEL_PDF_CHROME_BINARY`)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Getting started
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+The demo consumes the package through a Composer **path repository**. Clone
+both repositories next to each other:
 
 ```bash
-composer require laravel/boost --dev
+mkdir laravel-reports-demo
+cd laravel-reports-demo
 
-php artisan boost:install
+git clone https://github.com/guggach/laravel-reports.git
+git clone https://github.com/guggach/laravel-reports-doc-demo.git
+
+cd laravel-reports-doc-demo
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Install the PHP dependencies:
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+If the package is not at `../laravel-reports`, adjust the `repositories` entry
+in `composer.json`:
 
-## Code of Conduct
+```json
+"repositories": [{
+    "type": "path",
+    "url": "../laravel-reports"
+}]
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Create the environment and database:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Install the frontend assets and the Chromium binary used for PDF output:
+
+```bash
+npm install
+npx playwright install chromium
+npm run build
+```
+
+Start the application:
+
+```bash
+php artisan serve
+```
+
+Open <http://localhost:8000>.
+
+For frontend development, use `npm run dev` instead of `npm run build`.
+
+## URLs
+
+| URL | What it shows |
+|---|---|
+| `/` | Landing page |
+| `/docs` | Documentation index |
+| `/docs/{page}` | A documentation chapter, e.g. `/docs/groups`, `/docs/multilanguage` |
+| `/examples` | All example reports |
+| `/examples/{key}` | Source code and live links for one example |
+| `/reports/{key}` | Filter form, or a redirect to the preview when the report has no filters |
+| `/reports/{key}/run` | Preview frame with HTML document and PDF button |
+| `/reports/{key}/pdf` | Streamed PDF |
+| `/de/...` | German version of the documentation and examples |
+
+The report routes are intentionally not localized: `/reports/...` is shared by
+both languages and follows the language selected in the preview frame.
+
+## Example reports
+
+| Key | Demonstrates |
+|---|---|
+| `price_list` | Flow report with groups, subtotals, filters and typed filter controls |
+| `packing_list` | Strict pagination with fixed band heights, repeated grid header and page numbers |
+| `label_sheet` | N-up detail bands: four labels per row, with the row as pagination unit |
+| `invoice_example` | Strict free-form invoice with page blocks and a Swiss QR payment slip |
+| `contract_example` | Flow free-form contract with general terms starting on page 2 |
+| `database_sources` | The same report through Query, Eloquent, Raw SQL, Collection and Array sources |
+| `multilanguage` | Module translations, locale-aware dates/numbers and a frame language selector |
+| `group_enrichment` | Group data loaded once per group from an Eloquent model with translated attributes |
+
+Every example page at `/examples/{key}` shows the module structure and the
+actual source files, highlighted from disk.
+
+## Documentation chapters
+
+- Getting started
+- Routing & invocation
+- Report types
+- Bands explained
+- Report definition
+- Data sources
+- Groups & aggregates — including aggregate scope and group enrichment
+- Filter form
+- Multilingual reports
+
+The documentation is rendered from Blade views under `resources/views/docs`
+and registered in `config/docs.php`.
+
+## Report module structure
+
+Each report is self-contained under `app/Reports/<Name>/`:
+
+```
+app/Reports/PriceList/
+├── Report.php
+├── Source.php
+├── lang/
+│   ├── de/report.php
+│   └── en/report.php
+└── views/
+    ├── report-start.blade.php
+    ├── grid-head.blade.php
+    ├── row.blade.php
+    ├── category-head.blade.php
+    ├── category-foot.blade.php
+    └── report-end.blade.php
+```
+
+The package discovers reports under `app/Reports`, resolves their views and
+language files automatically, and exposes them through `/reports/{key}`.
+
+## PDF generation
+
+PDFs are produced by `spatie/laravel-pdf` with its Chrome driver. The demo
+auto-detects Playwright's Chromium installation:
+
+```text
+~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome
+```
+
+If Chromium lives elsewhere, set the binary explicitly:
+
+```bash
+LARAVEL_PDF_CHROME_BINARY=/usr/bin/chromium php artisan serve
+```
+
+Without a Chromium binary the HTML preview still works; the PDF route will
+report a converter error.
+
+## Tests
+
+Fast application tests:
+
+```bash
+php artisan test tests/Feature
+```
+
+Browser tests (requires the Playwright Chromium installation above):
+
+```bash
+php artisan test tests/Browser
+```
+
+The package itself has its own test suite:
+
+```bash
+cd ../laravel-reports
+composer test
+```
+
+## Project structure
+
+```
+app/
+├── Http/Controllers/DocsController.php
+├── Models/
+└── Reports/                 # self-contained report modules
+config/
+├── docs.php                 # documentation pages + example registry
+└── reports.php              # package config
+database/migrations/         # demo data, including report examples
+resources/views/
+├── docs/                    # documentation chapters
+├── examples/                # example index and source viewer
+└── layouts/                 # documentation layout
+routes/web.php               # localized docs + report routes
+```
+
+## Related repositories
+
+- Package: <https://github.com/guggach/laravel-reports>
+- Demo: <https://github.com/guggach/laravel-reports-doc-demo>
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT. See [LICENSE](LICENSE).
