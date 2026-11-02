@@ -62,13 +62,84 @@ PHP,
 <tr>
     <td colspan="2">Summe {{ $ctx->currentGroup()['key'] }}</td>
     <td style="text-align:right">
-        {{ number_format((float) $ctx->aggregates['category_total'], 2, '.', "'") }}
+        {{ $ctx->currency($ctx->aggregates['category_total']) }}
     </td>
 </tr>
 
 {{-- Report end: report aggregates --}}
 <p>{{ $ctx->total }} Positionen,
-   Gesamt {{ number_format((float) $ctx->aggregates['grand_total'], 2, '.', "'") }}</p>
+   Gesamt {{ $ctx->currency($ctx->aggregates['grand_total']) }}</p>
+BLADE,
+    ]];
+
+    $scopeTabs = [[
+        'label' => 'group scope',
+        'lang' => 'php',
+        'code' => <<<'PHP'
+$r->group('category', function ($g): void {
+    $g->header(view: 'category-head');
+    $g->footer(view: 'category-foot');
+});
+
+// Group-scoped aggregate declared on the report builder.
+// Equivalent to $g->aggSum('amount', as: 'category_total').
+$r->aggregate(
+    'category_total',
+    Sum::class,
+    field: 'amount',
+    scope: 'group:1',
+);
+
+// Report-scoped aggregate.
+$r->aggregate('grand_total', Sum::class, field: 'amount', scope: 'report');
+PHP,
+    ]];
+
+    $enrichmentTabs = [[
+        'label' => 'report',
+        'lang' => 'php',
+        'code' => <<<'PHP'
+use App\Reports\GroupEnrichment\CategoryInfo;
+
+$r->group('category', function ($g): void {
+    $g->header(view: 'category-head');
+    $g->footer(view: 'category-foot');
+    $g->enrichWith(CategoryInfo::class);
+});
+PHP,
+    ], [
+        'label' => 'CategoryInfo.php',
+        'lang' => 'php',
+        'code' => <<<'PHP'
+use App\Models\DemoCategory;
+use Guggach\Reports\Sources\EloquentSource;
+use Guggach\Reports\Sources\ReportField;
+use Guggach\Reports\Sources\ReportSource;
+
+final class CategoryInfo extends ReportSource
+{
+    public function records(): iterable
+    {
+        return (new EloquentSource(
+            DemoCategory::class,
+            [new ReportField('category', 'Kategorie', type: 'enum')],
+        ))
+            ->withFilters($this->filters() ?? [])
+            ->withLocale($this->locale())
+            ->records();
+    }
+}
+PHP,
+    ], [
+        'label' => 'views/category-head.blade.php',
+        'lang' => 'blade',
+        'code' => <<<'BLADE'
+@php($info = $ctx->groupData())
+
+<div class="group-head">
+    <strong>{{ $info?->name ?? $ctx->currentGroup()['key'] }}</strong>
+    <span>Ziel {{ $ctx->currency($info->target) }}</span>
+</div>
 BLADE,
     ]];
 @endphp
@@ -128,6 +199,15 @@ BLADE,
             <x-ui.code :tabs="$aggregateTabs" :caption="__('site.groups.aggregates_caption')" />
         </div>
 
+        <h3 class="doc-h3">{{ __('site.groups.scope_title') }}</h3>
+        <p class="doc-p">{{ __('site.groups.scope_lead') }}</p>
+
+        <x-docs.api-table :rows="trans('site.groups.scopes')" />
+
+        <div class="mt-6">
+            <x-ui.code :tabs="$scopeTabs" :caption="__('site.groups.scope_caption')" />
+        </div>
+
         <h3 class="doc-h3">{{ __('site.groups.availability_title') }}</h3>
         <p class="doc-p">{{ __('site.groups.availability_lead') }}</p>
 
@@ -139,6 +219,20 @@ BLADE,
         <div class="mt-4 rounded-xl border border-rose-200 bg-rose-50/60 p-4 dark:border-rose-500/20 dark:bg-rose-500/5">
             <p class="font-semibold text-rose-900 dark:text-rose-100">{{ __('site.groups.sorting_note_title') }}</p>
             <p class="mt-1 text-sm leading-relaxed text-rose-800/80 dark:text-rose-100/70">{{ __('site.groups.sorting_note') }}</p>
+        </div>
+
+        <h2 class="doc-h2">{{ __('site.groups.enrichment_title') }}</h2>
+        <p class="doc-p">{{ __('site.groups.enrichment_lead') }}</p>
+
+        <x-docs.api-table :rows="trans('site.groups.enrichment')" />
+
+        <div class="mt-6">
+            <x-ui.code :tabs="$enrichmentTabs" :caption="__('site.groups.enrichment_caption')" />
+        </div>
+
+        <div class="mt-4 rounded-xl border border-teal-200 bg-teal-50/60 p-4 dark:border-teal-500/20 dark:bg-teal-500/5">
+            <p class="font-semibold text-teal-900 dark:text-teal-100">{{ __('site.groups.enrichment_note_title') }}</p>
+            <p class="mt-1 text-sm leading-relaxed text-teal-800/80 dark:text-teal-100/70">{{ __('site.groups.enrichment_note') }}</p>
         </div>
 
         <h2 class="doc-h2">{{ __('site.groups.reserved_title') }}</h2>
@@ -153,6 +247,14 @@ BLADE,
             >
                 <span class="block font-semibold text-slate-900 dark:text-white">{{ __('site.groups.example_link') }}</span>
                 <span class="mt-1 block text-sm text-slate-600 dark:text-slate-300">{{ __('site.groups.example_link_text') }}</span>
+            </a>
+
+            <a
+                href="{{ route('examples.show', ['key' => 'group_enrichment']) }}"
+                class="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-teal-300 hover:shadow-sm dark:border-white/10 dark:bg-white/5 dark:hover:border-teal-500/40"
+            >
+                <span class="block font-semibold text-slate-900 dark:text-white">{{ __('site.groups.enrichment_link') }}</span>
+                <span class="mt-1 block text-sm text-slate-600 dark:text-slate-300">{{ __('site.groups.enrichment_link_text') }}</span>
             </a>
 
             <a

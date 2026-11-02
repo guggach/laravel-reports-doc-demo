@@ -236,6 +236,7 @@ return [
             'source' => 'Datenquellen',
             'groups' => 'Gruppen & Aggregate',
             'filters' => 'Filterformular',
+            'multilanguage' => 'Mehrsprachige Reports',
         ],
     ],
 
@@ -605,9 +606,33 @@ return [
         'report_aggregates' => [
             'aggregate' => ['sig' => 'aggregate(string $name, string $class, ?string $field = null, string $scope = \'report\')', 'text' => 'Deklariert ein Report-Aggregat. Der Name ist der Key in $ctx->aggregates.'],
             'classes' => ['sig' => 'Sum::class · Avg::class · Count::class · CountDistinct::class · Min::class · Max::class', 'text' => 'Die Klassen liegen unter Guggach\\Reports\\Aggregates. Ohne field zählt Count die Datensätze.'],
-            'scope' => ['sig' => 'string $scope = \'report\'', 'text' => 'Der Scope wird entgegengenommen, in v1 aber nicht unterschieden: Report-Aggregate sind immer reportweit.'],
+            'scope' => ['sig' => 'string $scope = \'report\'', 'text' => 'Aggregat-Scope: report für den ganzen Report oder group:1 … group:n für ein Gruppenlevel. Ungültige Scopes und fehlende Level werfen beim build().'],
         ],
         'aggregates_caption' => 'Report-Aggregate im Builder und der Zugriff in den Blade-Views.',
+
+        'scope_title' => 'Aggregat-Scope: Report oder Gruppe',
+        'scope_lead' => 'Der Scope entscheidet, welcher Resolver das Aggregat sammelt. Report-Aggregate laufen über die ganze Datenmenge; Gruppen-Aggregate werden beim Betreten der Gruppe zurückgesetzt und im Gruppenfuss vollständig ausgeliefert.',
+        'scope_caption' => 'Dasselbe Gruppen-Aggregat einmal über den GroupBuilder und einmal über den Report-Builder mit scope: group:1.',
+        'scopes' => [
+            'report' => ['sig' => 'scope: \'report\'', 'text' => 'Reportweit. Verfügbar im Report-Ende und während der Detailzeilen; Startband und Gruppenkopf sehen nur den bisherigen Stand.'],
+            'group' => ['sig' => 'scope: \'group:1\' … \'group:n\'', 'text' => 'Gehört zum Gruppenlevel n. Im Gruppenfuss vollständig, im Gruppenkopf noch leer. Entspricht $g->aggSum() für einfache Summen.'],
+            'equivalent' => ['sig' => '$r->aggregate(... group:1) ≡ $g->aggSum(...)', 'text' => 'Beide Wege hängen das Aggregat an dieselbe GroupDefinition. Der Builder erkennt das Level aus dem Scope.'],
+            'validation' => ['sig' => 'build()-Validierung', 'text' => 'Unbekannte Scopes, ein group:N ohne passendes Level und doppelte Namen im selben Level werfen eine InvalidArgumentException — kein stilles Umdeuten zum Report-Aggregat.'],
+        ],
+
+        'enrichment_title' => 'Gruppen-Enrichment',
+        'enrichment_lead' => 'enrichWith() holt Zusatzdaten genau einmal pro Gruppe — etwa Stammdaten, Adressen oder Planwerte, die sonst per Join in jeder Detailzeile dupliziert würden. Die Engine übergibt die Gruppenschlüssel als Filter und führt die Source in der Run-Locale aus.',
+        'enrichment_caption' => 'Der gruppierte Umsatz-Report lädt Kategoriename und Ziel aus einem Eloquent-Model; das View liest die Daten über $ctx->groupData().',
+        'enrichment' => [
+            'enrich' => ['sig' => 'enrichWith(ReportSource|string $source)', 'text' => 'Registriert eine Enrichment-Source pro Gruppenlevel. Akzeptiert eine Instanz oder einen Klassen-/Container-Namen.'],
+            'lifecycle' => ['sig' => 'einmal pro Gruppe', 'text' => 'Die Source läuft beim Öffnen der Gruppe, nicht pro Detailzeile. Bei einem erneuten Run derselben Gruppe (unsortierte Daten) läuft sie erneut.'],
+            'filters' => ['sig' => '$this->filters()', 'text' => 'Die Gruppenschlüssel kommen als FilterBag an, z. B. [\'category\' => \'Miete\']. Die Source entscheidet, ob sie die Filter pusht oder selbst liest.'],
+            'data' => ['sig' => '$ctx->groupData() · currentGroup()[\'data\']', 'text' => 'Der erste Rückgabedatensatz der Source steht im Gruppenkopf und -fuss bereit; ohne Treffer ist der Wert null.'],
+            'eloquent' => ['sig' => 'EloquentSource + spatie/laravel-translatable', 'text' => 'Weil die Source im LocaleScope läuft, liefert das Model die Attribute in der Run-Sprache. Eine eigene Gruppen-Locale braucht es nicht.'],
+            'exact' => ['sig' => 'ReportField(type: \'enum\'|\'id\')', 'text' => 'Für einen exakten Gruppenschlüssel das Feld als enum oder id deklarieren (Operator in). type: string würde like verwenden.'],
+        ],
+        'enrichment_note_title' => 'Gruppen bleiben in der Run-Locale',
+        'enrichment_note' => 'Es gibt bewusst keine Sprache pro Gruppe. Übersetzte Gruppendaten kommen aus der Enrichment-Source: Sie läuft innerhalb des LocaleScope, deshalb liefert Eloquent mit Spatie Translatable den Namen in der gewählten Report-Sprache. Eine halbfertige localeUsing()-API am GroupBuilder wurde entfernt.',
 
         'availability_title' => 'Wo welche Aggregate verfügbar sind',
         'availability_lead' => 'Nicht jedes Band sieht jeden Wert. Die Tabelle zeigt, was $ctx->aggregates pro Band enthält.',
@@ -624,17 +649,17 @@ return [
         'sorting_note_title' => 'Quelle nach Gruppenschlüsseln sortieren',
         'sorting_note' => 'Liefere die Datensätze bereits nach den Gruppenschlüsseln sortiert — etwa per orderBy() in der Query oder applySorts() in der Source. Bei unsortierten Daten erscheint dieselbe Gruppe mehrfach mit neuem Kopf und Fuss.',
 
-        'reserved_title' => 'Für später reserviert',
-        'reserved_lead' => 'Der GroupBuilder kennt bereits Methoden für Gruppen-Queries und Sprachen pro Gruppe. In v1 wertet die Engine sie noch nicht aus; sie sind für die nächste Ausbaustufe vorgesehen.',
+        'reserved_title' => 'Noch nicht umgesetzt: Top-Down',
+        'reserved_lead' => 'drivesWith() und link() sind als API vorbereitet, aber Top-Down-Gruppenquellen folgen erst in v2. Der Builder lehnt drivesWith() beim build() mit einer klaren Exception ab, statt die Definition still zu ignorieren.',
         'reserved' => [
-            'enrich' => ['sig' => 'enrichWith(string $source)', 'text' => 'Zusatzdaten einmal pro Gruppe laden, ohne die Detailzeilen per Join aufzublähen.'],
-            'drives' => ['sig' => 'drivesWith(string $source)', 'text' => 'Eine Source treibt die Iteration (Top-Down) statt der Detail-Source.'],
-            'link' => ['sig' => 'link(array $map)', 'text' => 'Mapping zwischen Gruppen-Schlüsseln und Feldern der Gruppen-Source.'],
-            'locale' => ['sig' => 'localeUsing(Closure|string|null $resolver)', 'text' => 'Sprache pro Gruppe oder Datensatz auflösen.'],
+            'drives' => ['sig' => 'drivesWith(string $source)', 'text' => 'Eine Source treibt die Iteration (Top-Down) statt der Detail-Source. In v1 nicht implementiert und beim build() abgelehnt.'],
+            'link' => ['sig' => 'link(array $map)', 'text' => 'Mapping zwischen Gruppen-Schlüsseln und Feldern der Gruppen-Source. Wird derzeit nur für die spätere Top-Down-Variante gespeichert.'],
         ],
 
         'example_link' => 'Preislisten-Beispiel öffnen',
         'example_link_text' => 'Die Gruppe, ihr Kopf, ihr Fuss und die Zwischensumme live ansehen.',
+        'enrichment_link' => 'Enrichment-Beispiel öffnen',
+        'enrichment_link_text' => 'Kategoriename und Ziel pro Gruppe aus einem Eloquent-Model, inklusive Sprachwechsel.',
         'back' => 'Weiter',
         'back_text' => 'Wie aus den Source-Feldern ein Filterformular wird und wie du es selbst baust.',
     ],
@@ -785,5 +810,70 @@ return [
         'back_routing_text' => 'Nochmals das Routing-Modell mit Formular, Vorschau, Dokument und PDF.',
         'back_source' => 'Zurück',
         'back_source_text' => 'Feldtypen, FilterBuilder und die Anwendung in der Source.',
+    ],
+
+    'multilanguage' => [
+        'title' => 'Mehrsprachige Reports',
+        'lead' => 'Sprache und Formatierung sind zwei getrennte Achsen: Die Sprache steuert Übersetzungen und app()->getLocale(), die Format-Locale steuert Datum, Zahlen und Trennzeichen. Die Währung bleibt davon unabhängig.',
+
+        'axes_title' => 'Sprache und Format-Locale',
+        'axes_lead' => 'Die Übersetzungssprache ist immer ein Sprachcode. Die Region kommt aus der Format-Locale — nicht aus einem regionalen Übersetzungsordner.',
+        'axes' => [
+            'language' => ['sig' => 'language · de · en · fr', 'text' => 'Setzt App::setLocale(), steuert __(), die Modul-lang-Dateien und ReportSource::locale().'],
+            'format' => ['sig' => 'formatLocale · de_CH · en_US · en_GB', 'text' => 'Steuert NumberFormatter, IntlDateFormatter und Carbon. Darf sich von der Sprache unterscheiden.'],
+            'no_region' => ['sig' => 'lang/de/report.php', 'text' => 'Regionale Übersetzungsordner wie lang/de_CH sind nicht vorgesehen. Regionen sind Formatierung, nicht Sprache.'],
+            'resolve' => ['sig' => 'de → de_CH · en → en_US', 'text' => 'Ohne explizite Region füllt die Engine sie über config/reports.format.locales oder einen Host-Resolver.'],
+            'app_locale' => ['sig' => 'app()->getLocale()', 'text' => 'Darf technisch de_CH sein. Die Engine normalisiert intern auf language = de und formatLocale = de_CH.'],
+        ],
+
+        'lang_title' => 'Übersetzungen im Report-Modul',
+        'lang_lead' => 'Jeder Report bringt seine Texte selbst mit. Der ReportRegistry registriert das lang-Verzeichnis automatisch als Laravel-Namespace mit dem key() als Präfix.',
+        'lang_caption' => 'Modul-eigene Lang-Dateien und ihre Verwendung in den Blade-Bändern.',
+        'lang_note' => 'Der Namespace ist der Report-Key: multilanguage::report.name. Die Struktur ist lang/<language>/<group>.php; eine Datei lang/de.php auf oberster Ebene wird von Laravels Namespace-Loader nicht geladen.',
+
+        'runtime_title' => 'Run-Locale und Frame-Selector',
+        'runtime_lead' => 'Die App-Sprache bleibt die Sprache des Users. Der Report-Output lässt sich pro Lauf überschreiben — über die Option, die Report-Klasse oder die Sprachwahl im Vorschau-Frame.',
+        'runtime' => [
+            'option' => ['sig' => 'Reports::html($report, locale: \'en\')', 'text' => 'Überschreibt die Sprache für diesen Lauf. Reports::pdf() nimmt denselben Parameter.'],
+            'report' => ['sig' => 'Report::locale() · Report::formatLocale()', 'text' => 'Reportweite Defaults, falls der Aufruf keine Locale übergibt.'],
+            'scope' => ['sig' => 'LocaleScope', 'text' => 'Setzt App-, Carbon- und Number-Locale und stellt den vorherigen Zustand im finally wieder her — auch in Jobs und Queues.'],
+            'frame' => ['sig' => '?locale=en', 'text' => 'Der Frame-Selector setzt locale auf die Preview-URL; Dokument, iframe, PDF und Filterformular übernehmen den Wert.'],
+            'config' => ['sig' => 'config(\'reports.locales\')', 'text' => 'Allow-List für die Auswahl. Bei nur einer Locale blendet der Frame den Selector aus.'],
+        ],
+        'runtime_caption' => 'Sprache pro Aufruf und die Sprachwahl im Frame.',
+
+        'format_title' => 'Datum, Zahlen und Währung',
+        'format_lead' => 'Bänder formatieren über den RenderContext. Der Formatter kennt die Format-Locale des Laufs (oder des Datensatzes) und die explizite Währung des Reports.',
+        'format' => [
+            'number' => ['sig' => '$ctx->number(2500.4)', 'text' => 'Neutrale Zahl mit den Trennzeichen der Format-Locale, z. B. 2\'500.40 in de_CH oder 2,500.40 in en_US.'],
+            'currency' => ['sig' => '$ctx->currency(2500.4)', 'text' => 'Formatiert mit expliziter Währung: Report::currency(), Feld-Metadatum oder zweiter Parameter.'],
+            'date' => ['sig' => '$ctx->date($value)', 'text' => 'Default ist MEDIUM: 18.09.2026 in de_CH, Sep 18, 2026 in en_US.'],
+            'styles' => ['sig' => 'date:short · date:long · date:iso', 'text' => 'SHORT nur für kompakte Tabellen, LONG für Verträge, ISO für technische Ausgabe.'],
+            'datetime' => ['sig' => '$ctx->dateTime($value) · $ctx->time($value)', 'text' => 'Datum mit Zeit bzw. nur Zeit, ebenfalls in der Format-Locale.'],
+        ],
+        'format_note_title' => 'Währung ist keine Locale-Eigenschaft',
+        'format_note' => 'en_US bedeutet nicht USD, de_CH nicht CHF. Es gibt keinen globalen Währungs-Default und keine Ableitung aus der Locale. Ohne explizite Währung wirft currency() eine Exception; number() funktioniert immer. Multi-Währung kommt aus einem Datensatzfeld, ohne automatische Umrechnung.',
+
+        'source_title' => 'Daten aus der Source',
+        'source_lead' => 'Die Engine setzt app()->getLocale() vor dem Laden der Daten. Eloquent-Modelle mit spatie/laravel-translatable liefern deshalb automatisch die richtige Sprache; sprachspaltige Tabellen filtern selbst.',
+        'source_caption' => 'Drei Muster: translatable Models, Sprachspalten und Sprach-Arrays in der Demo-Source.',
+        'source_note' => 'Gruppierungs- und Sortier-Keys sollten sprachneutral sein. Gruppendaten übersetzt man über enrichWith(); Gruppen selbst bleiben in der Run-Locale.',
+
+        'record_title' => 'Locale pro Datensatz',
+        'record_lead' => 'Bei einem Lauf mit Rechnungen in verschiedenen Sprachen löst das Detailband die Locale pro Datensatz auf. Jede Formularinstanz rendert in ihrem eigenen LocaleScope.',
+        'record' => [
+            'locale_field' => ['sig' => '->localeField(\'language\')', 'text' => 'Liest die Sprache aus einem Source-Feld. Alternativ localeUsing(fn ($row) => …).'],
+            'format_field' => ['sig' => '->formatLocaleField(\'format_locale\')', 'text' => 'Optionale Format-Locale pro Datensatz; fehlt sie, wird sie aus der Sprache ergänzt.'],
+            'context' => ['sig' => '$ctx->locale · $ctx->formatLocale', 'text' => 'Der RenderContext des Datensatzes enthält die aufgelösten Werte und einen passenden ReportFormatter.'],
+            'groups' => ['sig' => 'Gruppen: Run-Locale', 'text' => 'Gruppenköpfe und -füsse bleiben in der Run-Locale. Übersetzte Gruppendaten kommen über enrichWith() aus Eloquent.'],
+        ],
+        'record_caption' => 'Mehrere Rechnungen in einem Lauf, jede mit eigener Sprache und eigenem Format.',
+
+        'example_link' => 'Mehrsprachige Preisliste öffnen',
+        'example_link_text' => 'Sprachwahl im Frame-Header, Modul-Texte und formatierte Produktpreise live ansehen.',
+        'enrichment_link' => 'Gruppen-Enrichment öffnen',
+        'enrichment_link_text' => 'Übersetzte Kategorienamen aus einem Eloquent-Model pro Gruppe.',
+        'next' => 'Weiter',
+        'next_text' => 'Zurück zu den Gruppen und Aggregaten — inklusive Scope und Enrichment.',
     ],
 ];

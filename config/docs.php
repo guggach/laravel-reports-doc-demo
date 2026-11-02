@@ -48,6 +48,10 @@ return [
             'view' => 'docs.filters',
             'title' => 'site.docs.pages.filters',
         ],
+        'multilanguage' => [
+            'view' => 'docs.multilanguage',
+            'title' => 'site.docs.pages.multilanguage',
+        ],
     ],
 
     /*
