@@ -48,7 +48,7 @@
 
     @foreach ($tabs as $i => $tab)
         <div x-show="tab === {{ $i }}" x-cloak>
-            <pre class="max-h-[34rem] overflow-auto bg-white p-4 font-mono text-[13px] leading-6 dark:bg-slate-900"><code class="hl block" data-lang="{{ $tab['lang'] }}">{!! $tab['html'] !!}</code></pre>
+            <pre class="overflow-auto bg-white p-4 font-mono text-[13px] leading-6 dark:bg-slate-900" style="max-height: {{ $maxHeight }}"><code class="hl block" data-lang="{{ $tab['lang'] }}">{!! $tab['html'] !!}</code></pre>
         </div>
     @endforeach
 

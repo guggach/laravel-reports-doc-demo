@@ -131,6 +131,7 @@ return [
         ],
         [
             'key' => 'invoice_example',
+            'teaser' => 'app/Reports/InvoiceExample/views/invoice.blade.php',
             'badges' => ['strict', 'freeform', 'pagination'],
             'structure' => implode("\n", [
                 'app/Reports/InvoiceExample/',
@@ -151,6 +152,7 @@ return [
         ],
         [
             'key' => 'contract_example',
+            'teaser' => 'app/Reports/ContractExample/views/contract.blade.php',
             'badges' => ['flow', 'freeform'],
             'structure' => implode("\n", [
                 'app/Reports/ContractExample/',
@@ -195,6 +197,7 @@ return [
         ],
         [
             'key' => 'multilanguage',
+            'teaser' => 'app/Reports/Multilanguage/lang/de/report.php',
             'badges' => ['flow', 'i18n', 'aggregates'],
             'structure' => implode("\n", [
                 'app/Reports/Multilanguage/',
@@ -222,6 +225,7 @@ return [
         ],
         [
             'key' => 'group_enrichment',
+            'teaser' => 'app/Reports/GroupEnrichment/CategoryInfo.php',
             'badges' => ['flow', 'groups', 'i18n', 'aggregates', 'enrichment'],
             'structure' => implode("\n", [
                 'app/Reports/GroupEnrichment/',

@@ -1,0 +1,20 @@
+# Build context: parent directory with app/ and laravel-reports/.
+**/.git
+**/.github
+**/node_modules
+**/vendor
+**/.env
+**/.env.*
+!**/.env.example
+**/tests
+**/phpunit.xml
+**/storage/logs
+**/storage/framework
+**/storage/app/demo-pdfs
+**/database/*.sqlite
+**/public/build
+**/public/hot
+**/*.log
+**/.DS_Store
+**/.idea
+**/.vscode

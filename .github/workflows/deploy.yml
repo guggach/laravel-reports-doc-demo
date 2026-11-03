@@ -1,0 +1,75 @@
+name: Build Demo Docker Image
+
+# The image is built on tag pushes (v*) and manually via workflow_dispatch.
+# Branch pushes do not publish an image: the demo tracks the package's main
+# branch, so a tagged, reproducible artifact is the safer default.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout demo
+        uses: actions/checkout@v5
+        with:
+          path: app
+
+      # The demo consumes the package through a Composer path repository
+      # (../laravel-reports), so both repositories have to be in the build
+      # context. Pin ref if you want reproducible builds against a branch.
+      - name: Checkout package
+        uses: actions/checkout@v5
+        with:
+          repository: guggach/laravel-reports
+          path: laravel-reports
+          # If the package repository is private, add a PAT with repo access:
+          # token: ${{ secrets.PACKAGE_REPO_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use the repository's dockerignore as context ignore file
+        run: cp app/docker/dockerignore .dockerignore
+
+      - name: Compute image tag
+        id: meta
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          TAG="${DATE}-${SHA}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Computed image tag: ${TAG}"
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          # Context root contains app/ and laravel-reports/
+          context: .
+          file: app/docker/Dockerfile
+          push: true
+          # Always use the current base image (PHP security patches).
+          pull: true
+          tags: |
+            ghcr.io/guggach/laravel-reports-doc-demo:${{ steps.meta.outputs.tag }}
+            ghcr.io/guggach/laravel-reports-doc-demo:${{ github.ref_name }}
+            ghcr.io/guggach/laravel-reports-doc-demo:latest
+          build-args: |
+            APP_VERSION=${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

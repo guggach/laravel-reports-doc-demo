@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\NoIndex;
+use App\Http\Middleware\ServePrebuiltPdf;
+use App\Support\ChromiumBinary;
 use Guggach\Reports\Contracts\HtmlToPdf;
 use Guggach\Reports\Renderers\SpatieLaravelPdfConverter;
 use Illuminate\Support\ServiceProvider;
@@ -14,6 +17,18 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(HtmlToPdf::class, SpatieLaravelPdfConverter::class);
+
+        // The package reads this list in its own boot() method. Every provider
+        // is registered before any boot() runs, so setting the config here is
+        // safe and keeps the package defaults intact. NoIndex wraps the
+        // prebuilt PDF middleware so the header is also set on file responses.
+        config([
+            'reports.routes.middleware' => [
+                'web',
+                NoIndex::class,
+                ServePrebuiltPdf::class,
+            ],
+        ]);
     }
 
     /**
@@ -24,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         // Use spatie/laravel-pdf with its "chrome" driver (pure PHP + the
         // Chromium binary that Playwright already installed). In production the
         // driver and binary are configured via config/laravel-pdf.php.
-        $binary = env('LARAVEL_PDF_CHROME_BINARY') ?: $this->playwrightChromium();
+        $binary = ChromiumBinary::path();
 
         if (is_string($binary) && $binary !== '') {
             config([
@@ -33,19 +48,5 @@ class AppServiceProvider extends ServiceProvider
                 'laravel-pdf.chrome.no_sandbox' => true,
             ]);
         }
-    }
-
-    private function playwrightChromium(): ?string
-    {
-        $home = getenv('HOME');
-
-        if ($home === false || $home === '') {
-            return null;
-        }
-
-        $matches = glob($home.'/.cache/ms-playwright/chromium-*/chrome-linux64/chrome') ?: [];
-        rsort($matches);
-
-        return $matches[0] ?? null;
     }
 }

@@ -166,8 +166,12 @@
                             </div>
 
                             <div>
-                                <x-ui.preview
-                                    :src="route('reports.preview', ['name' => $key])"
+                                {{-- Static screenshot instead of a live iframe: the
+                                     landing page stays fast and crawlable, the
+                                     interactive report is one click away. --}}
+                                <x-ui.screenshot
+                                    :src="\App\Support\DemoAssetPaths::screenshotSource($key)"
+                                    :href="route('reports.preview', ['name' => $key])"
                                     :pdf="route('reports.pdf', ['name' => $key])"
                                     :title="__('site.examples.items.'.$key.'.title')"
                                     height="30rem"
@@ -176,7 +180,21 @@
                         </div>
 
                         <div class="mt-6">
-                            <x-ui.code :tabs="$example['files']" />
+                            {{-- One representative file on the landing page; the
+                                 full module lives on the example detail page. The
+                                 teaser points at the most telling file where the
+                                 default (Report.php) would only show imports. --}}
+                            <x-ui.code :tabs="[$example['teaser'] ?? $example['files'][0]['path']]" max-height="18rem" />
+
+                            <div class="mt-3 flex justify-end">
+                                <a
+                                    href="{{ route('examples.show', ['key' => $key]) }}"
+                                    class="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300"
+                                >
+                                    {{ __('site.examples.files') }}
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+                                </a>
+                            </div>
                         </div>
                     </article>
                 @endforeach

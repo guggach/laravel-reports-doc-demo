@@ -4,6 +4,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use NielsNumbers\LaravelLocalizer\Middleware\RedirectLocale;
+use NielsNumbers\LaravelLocalizer\Middleware\SetLocale;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,16 +15,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Production runs behind the Caddy reverse proxy (FrankenPHP), which
+        // terminates TLS. Without this, asset() and route() generate http://
+        // URLs and the browser blocks them as mixed content.
+        $middleware->trustProxies(at: '*');
+
         // Localizer: SetLocale must run after StartSession (session-based
         // detection) and before SubstituteBindings (translated bindings).
         $middleware->web(remove: [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            SubstituteBindings::class,
         ]);
 
         $middleware->web(append: [
-            \NielsNumbers\LaravelLocalizer\Middleware\SetLocale::class,
-            \NielsNumbers\LaravelLocalizer\Middleware\RedirectLocale::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            SetLocale::class,
+            RedirectLocale::class,
+            SubstituteBindings::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

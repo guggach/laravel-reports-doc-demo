@@ -22,6 +22,7 @@ final class Code extends Component
         CodeSample $samples,
         array $tabs = [],
         public ?string $caption = null,
+        public string $maxHeight = '34rem',
     ) {
         $resolved = [];
 

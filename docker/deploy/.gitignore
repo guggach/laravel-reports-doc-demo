@@ -1,0 +1,4 @@
+# Never commit host secrets or local env files.
+.env
+deploy.env
+*.log

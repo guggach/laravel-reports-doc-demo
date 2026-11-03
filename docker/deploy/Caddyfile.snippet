@@ -1,0 +1,28 @@
+# ============================================================
+#  Caddy block for the laravel-reports doc/demo
+# ============================================================
+#  Add this to the Caddyfile that runs inside website3, then
+#  validate and reload without downtime (from the website3
+#  compose directory):
+#
+#     docker compose exec app caddy validate --config /etc/caddy/Caddyfile
+#     docker compose exec app caddy reload   --config /etc/caddy/Caddyfile
+#
+#  Requirements:
+#    - laravel-reports.private-net.ch resolves to this server (A/AAAA)
+#    - the docs container is attached to the shared "edge" network
+#    - the website3 app container is attached to "edge" as well
+#
+#  No global X-Robots-Tag here on purpose: the application already
+#  marks /examples/* and /reports/* as noindex. The docs pages stay
+#  indexable.
+# ============================================================
+
+laravel-reports.private-net.ch {
+    encode zstd br gzip
+
+    # No PHP version leak.
+    header -X-Powered-By
+
+    reverse_proxy docs:80
+}

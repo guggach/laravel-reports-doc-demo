@@ -175,6 +175,57 @@ LARAVEL_PDF_CHROME_BINARY=/usr/bin/chromium php artisan serve
 Without a Chromium binary the HTML preview still works; the PDF route will
 report a converter error.
 
+## Demo assets (screenshots and PDFs)
+
+The landing page shows static screenshots instead of live iframes, and the PDF
+buttons serve prebuilt files. Both are generated from the running application,
+so they cannot drift from the reports shown on the page:
+
+```bash
+php artisan serve            # in one terminal
+php artisan demo:assets      # in another
+```
+
+- `demo:screenshots` captures one A4 page per example into
+  `public/images/examples/`.
+- `demo:pdfs` renders every example in every supported locale into
+  `storage/app/demo-pdfs/`.
+- `demo:assets` runs both. Use `--only=price_list,invoice_example` to limit the
+  run and `--url=...` to point at another instance.
+
+The PDF route serves the prebuilt file for the default report state and only
+falls back to live Chromium rendering when a filter is set (throttled to six
+requests per minute and IP). When the files are missing everything still works,
+it is just slower.
+
+In production, run the generator after the container is up:
+
+```bash
+docker compose exec -T docs php artisan demo:assets --url=http://127.0.0.1
+```
+
+`--url=http://127.0.0.1` makes the container fetch its own assets without going
+through the public proxy (and a possible `basic_auth` gate). The image needs a
+writable `public/images/examples` directory for the web user, for example:
+
+```dockerfile
+RUN mkdir -p public/images/examples && chown -R www-data:www-data public/images
+```
+
+The example pages are deliberately excluded from search engines with
+`X-Robots-Tag: noindex`; only `/` and `/docs/*` appear in `/sitemap.xml`.
+
+## Deployment
+
+The production image and the deploy helpers live in [`docker/`](docker):
+
+- `docker/Dockerfile` – FrankenPHP + Chromium, self-contained SQLite demo DB
+- `docker/build.sh` – assembles the build context (this repo + the package repo)
+- `docker/deploy/` – compose stack, `install.sh`, `pull.sh`, Caddy snippet
+
+See [`docker/deploy/README.md`](docker/deploy/README.md) for the server setup and
+the reverse proxy configuration.
+
 ## Tests
 
 Fast application tests:
