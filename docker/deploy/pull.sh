@@ -36,14 +36,17 @@ set -a
 . ./deploy.env
 set +a
 
-: "${GHCR_TOKEN:?GHCR_TOKEN is empty in deploy.env}"
 : "${GHCR_USER:=guggach}"
 
-echo "==> docker login ghcr.io"
-if ! printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null 2>&1; then
-    echo "error: ghcr.io login failed. The token is probably expired." >&2
-    echo "       Create a PAT with scope read:packages and update deploy.env." >&2
-    exit 1
+if [ -n "${GHCR_TOKEN:-}" ]; then
+    echo "==> docker login ghcr.io"
+    if ! printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null 2>&1; then
+        echo "error: ghcr.io login failed. The token is probably expired." >&2
+        echo "       Create a PAT with scope read:packages and update deploy.env." >&2
+        exit 1
+    fi
+else
+    echo "==> no GHCR_TOKEN set, pulling anonymously (public image)"
 fi
 
 echo "==> pull image"

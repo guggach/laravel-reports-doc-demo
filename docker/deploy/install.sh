@@ -78,9 +78,7 @@ fi
 
 if grep -q '^GHCR_TOKEN=$' deploy.env; then
     echo
-    echo "!! Set GHCR_TOKEN in deploy.env, then run: ./pull.sh"
-    print_next_steps
-    exit 0
+    echo "    GHCR_TOKEN is empty – the image is public, pull works anonymously."
 fi
 
 echo "==> pull + start"

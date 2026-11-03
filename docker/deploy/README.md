@@ -62,8 +62,8 @@ cd /opt/laravel-reports
 ```
 
 `install.sh` creates `.env` (with a generated `APP_KEY`), `deploy.env`, the
-`edge` network and starts the container. Then set `GHCR_TOKEN` (a PAT with
-`read:packages`) in `deploy.env`.
+`edge` network and starts the container. The image is public, so no GHCR token
+is needed; only set `GHCR_TOKEN` in `deploy.env` if the package becomes private.
 
 ## 4. Route the domain through the existing Caddy
 
