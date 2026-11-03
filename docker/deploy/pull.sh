@@ -4,17 +4,11 @@
 # ============================================================
 #  Runs on the host, typically from cron or by hand:
 #
-#     cd /opt/laravel-reports && ./pull.sh
+#     cd /opt/docker/guggach/laravel-reports && ./pull.sh
 #
-#  Steps:
-#    1. login to ghcr.io (token from deploy.env)
-#    2. pull the image
-#    3. recreate the container
-#    4. wait for /up
-#    5. regenerate screenshots + prebuilt PDFs inside the container
-#
-#  The generator runs with --url=http://127.0.0.1 so the container
-#  fetches its own assets without going through the public proxy.
+#  The container is only recreated when the image digest actually
+#  changed. An unchanged cron run is a no-op: no restart, no asset
+#  regeneration.
 # ============================================================
 
 set -euo pipefail
@@ -27,7 +21,7 @@ if [ ! -f .env ]; then
 fi
 
 if [ ! -f deploy.env ]; then
-    echo "error: deploy.env is missing (copy deploy.env.example and set GHCR_TOKEN)" >&2
+    echo "error: deploy.env is missing (copy deploy.env.example)" >&2
     exit 1
 fi
 
@@ -37,6 +31,7 @@ set -a
 set +a
 
 : "${GHCR_USER:=guggach}"
+IMAGE="${IMAGE:-ghcr.io/guggach/laravel-reports-doc-demo:latest}"
 
 if [ -n "${GHCR_TOKEN:-}" ]; then
     echo "==> docker login ghcr.io"
@@ -49,11 +44,28 @@ else
     echo "==> no GHCR_TOKEN set, pulling anonymously (public image)"
 fi
 
+before="$(docker image inspect --format '{{.Id}}' "$IMAGE" 2>/dev/null || true)"
+
 echo "==> pull image"
 docker compose pull docs
 
-echo "==> recreate container"
-docker compose up -d --force-recreate docs
+after="$(docker image inspect --format '{{.Id}}' "$IMAGE" 2>/dev/null || true)"
+
+recreated=0
+
+if [ -z "$after" ]; then
+    echo "error: image could not be pulled" >&2
+    exit 1
+fi
+
+if [ "$before" != "$after" ]; then
+    echo "==> new image (${before:-none} -> ${after}), recreating container"
+    docker compose up -d --force-recreate docs
+    recreated=1
+else
+    echo "==> image unchanged, ensuring the container is up"
+    docker compose up -d docs
+fi
 
 echo "==> waiting for the health endpoint"
 healthy=0
@@ -71,8 +83,14 @@ if [ "$healthy" -ne 1 ]; then
     exit 1
 fi
 
-echo "==> generating demo assets (screenshots + PDFs)"
-docker compose exec -T docs php artisan demo:assets --url=http://127.0.0.1
+# The PDFs live inside the container, so a fresh container needs them.
+# An unchanged container keeps them from the previous deploy.
+if [ "$recreated" -eq 1 ] || ! docker compose exec -T docs test -f /app/storage/app/demo-pdfs/price_list.en.pdf; then
+    echo "==> generating demo assets (screenshots + PDFs)"
+    docker compose exec -T docs php artisan demo:assets --url=http://127.0.0.1
+else
+    echo "==> demo assets present, skipping generation"
+fi
 
 echo "==> status"
 docker compose ps docs
