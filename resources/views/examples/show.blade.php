@@ -8,6 +8,7 @@
         $key = $example['key'];
         $preview = route('reports.preview', ['name' => $key]);
         $pdf = route('reports.pdf', ['name' => $key]);
+        $excel = ($example['excel'] ?? false) ? route('reports.excel', ['name' => $key]) : null;
     @endphp
 
     <div class="mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
@@ -45,6 +46,12 @@
                 href="{{ $pdf }}"
                 class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
             >{{ __('site.actions.pdf') }}</a>
+            @if ($excel)
+                <a
+                    href="{{ $excel }}"
+                    class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+                >{{ __('site.actions.excel') }}</a>
+            @endif
             <a
                 href="#code"
                 class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
@@ -55,6 +62,7 @@
             <x-ui.preview
                 :src="$preview"
                 :pdf="$pdf"
+                :excel="$excel"
                 :title="__('site.examples.items.'.$key.'.title')"
                 height="40rem"
             />

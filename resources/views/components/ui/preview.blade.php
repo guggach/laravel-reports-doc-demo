@@ -26,6 +26,13 @@
                     class="rounded-md px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
                 >{{ __('site.actions.pdf') }}</a>
             @endif
+
+            @if ($excel ?? null)
+                <a
+                    href="{{ $excel }}"
+                    class="rounded-md px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                >{{ __('site.actions.excel') }}</a>
+            @endif
         </div>
     </div>
 

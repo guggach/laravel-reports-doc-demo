@@ -14,9 +14,9 @@ locale-aware formatting.
 ## What is inside
 
 - A localized documentation site (English by default, German under `/de`)
-- 8 runnable example reports, each with source code and a live preview
-- A live filter form, HTML preview frame, and PDF output
-- Examples for Flow, Strict, N-up, free-form, database sources, and i18n
+- 9 runnable example reports, each with source code and a live preview
+- A live filter form, HTML preview frame, PDF and Excel output
+- Examples for Flow, Strict, N-up, free-form, database sources, i18n and typed XLSX
 - A group-enrichment example using an Eloquent model with translated data
 
 ## Requirements
@@ -27,6 +27,7 @@ locale-aware formatting.
 - SQLite (the demo uses a local SQLite database)
 - Chromium for PDF generation (Playwright-managed, or set
   `LARAVEL_PDF_CHROME_BINARY`)
+- PhpSpreadsheet for the Excel example (installed by `composer install`)
 
 ## Getting started
 
@@ -96,8 +97,9 @@ For frontend development, use `npm run dev` instead of `npm run build`.
 | `/examples` | All example reports |
 | `/examples/{key}` | Source code and live links for one example |
 | `/reports/{key}` | Filter form, or a redirect to the preview when the report has no filters |
-| `/reports/{key}/run` | Preview frame with HTML document and PDF button |
+| `/reports/{key}/run` | Preview frame with HTML document, PDF and Excel buttons |
 | `/reports/{key}/pdf` | Streamed PDF |
+| `/reports/{key}/xlsx` | Typed XLSX workbook (flat data export) |
 | `/de/...` | German version of the documentation and examples |
 
 The report routes are intentionally not localized: `/reports/...` is shared by
@@ -115,6 +117,7 @@ both languages and follows the language selected in the preview frame.
 | `database_sources` | The same report through Query, Eloquent, Raw SQL, Collection and Array sources |
 | `multilanguage` | Module translations, locale-aware dates/numbers and a frame language selector |
 | `group_enrichment` | Group data loaded once per group from an Eloquent model with translated attributes |
+| `excel_export` | Typed XLSX export with real numbers, dates, currency formats, filters and a total row |
 
 Every example page at `/examples/{key}` shows the module structure and the
 actual source files, highlighted from disk.
@@ -130,6 +133,7 @@ actual source files, highlighted from disk.
 - Groups & aggregates — including aggregate scope and group enrichment
 - Filter form
 - Multilingual reports
+- Excel export
 
 The documentation is rendered from Blade views under `resources/views/docs`
 and registered in `config/docs.php`.

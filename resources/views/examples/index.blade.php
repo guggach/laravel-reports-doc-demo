@@ -14,6 +14,7 @@
                     $key = $example['key'];
                     $preview = route('reports.preview', ['name' => $key]);
                     $pdf = route('reports.pdf', ['name' => $key]);
+                    $excel = ($example['excel'] ?? false) ? route('reports.excel', ['name' => $key]) : null;
                 @endphp
 
                 <article class="py-8 first:pt-0">
@@ -44,6 +45,12 @@
                                 {{ __('site.examples.url') }}
                                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17 17 7M9 7h8v8" /></svg>
                             </a>
+                            @if ($excel)
+                                <a
+                                    href="{{ $excel }}"
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+                                >{{ __('site.actions.excel') }}</a>
+                            @endif
                             <a
                                 href="{{ route('examples.show', ['key' => $key]) }}"
                                 class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"

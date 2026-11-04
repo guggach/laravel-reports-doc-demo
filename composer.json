@@ -12,6 +12,7 @@
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "niels-numbers/laravel-localizer": "^1.4",
+        "phpoffice/phpspreadsheet": "^5.10",
         "spatie/laravel-pdf": "^2.14",
         "tempest/highlight": "^2.28"
     },

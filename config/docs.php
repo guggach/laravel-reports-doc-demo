@@ -52,6 +52,10 @@ return [
             'view' => 'docs.multilanguage',
             'title' => 'site.docs.pages.multilanguage',
         ],
+        'excel' => [
+            'view' => 'docs.excel',
+            'title' => 'site.docs.pages.excel',
+        ],
     ],
 
     /*
@@ -221,6 +225,32 @@ return [
                 ['path' => 'app/Reports/Multilanguage/views/grid-head.blade.php', 'label' => 'views/grid-head.blade.php', 'lang' => 'blade'],
                 ['path' => 'app/Reports/Multilanguage/views/row.blade.php', 'label' => 'views/row.blade.php', 'lang' => 'blade'],
                 ['path' => 'app/Reports/Multilanguage/views/report-end.blade.php', 'label' => 'views/report-end.blade.php', 'lang' => 'blade'],
+            ],
+        ],
+        [
+            'key' => 'excel_export',
+            'badges' => ['flow', 'excel', 'aggregates', 'filters'],
+            'excel' => true,
+            'structure' => implode("\n", [
+                'app/Reports/ExcelExport/',
+                '├── Report.php              # flat order list + field metadata',
+                '├── lang/',
+                '│   ├── de/report.php',
+                '│   └── en/report.php',
+                '└── views/',
+                '    ├── report-start.blade.php',
+                '    ├── grid-head.blade.php',
+                '    ├── row.blade.php',
+                '    └── report-end.blade.php',
+            ]),
+            'files' => [
+                ['path' => 'app/Reports/ExcelExport/Report.php', 'label' => 'Report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/ExcelExport/lang/de/report.php', 'label' => 'lang/de/report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/ExcelExport/lang/en/report.php', 'label' => 'lang/en/report.php', 'lang' => 'php'],
+                ['path' => 'app/Reports/ExcelExport/views/report-start.blade.php', 'label' => 'views/report-start.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/ExcelExport/views/grid-head.blade.php', 'label' => 'views/grid-head.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/ExcelExport/views/row.blade.php', 'label' => 'views/row.blade.php', 'lang' => 'blade'],
+                ['path' => 'app/Reports/ExcelExport/views/report-end.blade.php', 'label' => 'views/report-end.blade.php', 'lang' => 'blade'],
             ],
         ],
         [
