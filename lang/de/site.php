@@ -900,6 +900,8 @@ return [
         'install_lead' => 'Der Excel-Exporter ist optional und nutzt PhpSpreadsheet. HTML- und PDF-Ausgabe funktionieren ohne die Bibliothek weiter.',
         'usage_title' => 'Export aus dem Code oder über die Route',
         'usage_lead' => 'Reports::excel() verwendet dieselben Filter, Sortierungen und Locales wie HTML und PDF. Das Paket registriert zusätzlich /reports/{name}/xlsx.',
+        'workbook_title' => 'Mehrblatt-Arbeitsmappe',
+        'workbook_lead' => 'Reports::excelWorkbook() erzeugt eine Datei mit mehreren Listen. Jedes Sheet behält Source, Filter und Optionen; globale Optionen werden pro Sheet übernommen.',
         'fields_title' => 'Was in den Zellen landet',
         'fields_lead' => 'Die Source-Felder bestimmen die Spalten; Typ und Format-Token bestimmen Zelltyp und Excel-Zahlenformat.',
         'fields' => [

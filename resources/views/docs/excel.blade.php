@@ -86,6 +86,25 @@ PHP,
             <x-ui.code :tabs="$usageTabs" />
         </div>
 
+        <h2 class="doc-h2">{{ __('site.excel.workbook_title') }}</h2>
+        <p class="doc-p">{{ __('site.excel.workbook_lead') }}</p>
+        <div class="mt-4">
+            <x-ui.code :tabs="[[
+                'label' => 'Workbook',
+                'lang' => 'php',
+                'code' => <<<'PHP'
+use Guggach\Reports\Facades\Reports;
+
+return Reports::excelWorkbook()
+    ->sheet('Stays', $staysReport)
+    ->sheet('Contracts', $contractsReport)
+    ->sheet('Guests', $guestsReport)
+    ->name('notfall.xlsx')
+    ->download();
+PHP,
+            ]]" />
+        </div>
+
         <h2 class="doc-h2">{{ __('site.excel.fields_title') }}</h2>
         <p class="doc-p">{{ __('site.excel.fields_lead') }}</p>
         <x-docs.api-table :rows="trans('site.excel.fields')" />

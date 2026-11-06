@@ -47,7 +47,33 @@ fi
 before="$(docker image inspect --format '{{.Id}}' "$IMAGE" 2>/dev/null || true)"
 
 echo "==> pull image"
-docker compose pull docs
+# Der IPv6-Pfad zu pkg-containers.githubusercontent.com (Fastly) wird
+# gelegentlich mitten im Layer-Download zurueckgesetzt ("connection reset by
+# peer"). Bereits geladene Layer bleiben im Cache, ein sofortiger Retry
+# trifft meist einen anderen CDN-Knoten und laeuft durch. Ohne Retry bleibt
+# der Cron-Deploy haengen und die Demo laeuft auf dem alten Image.
+pull_image() {
+    local attempt
+    for attempt in 1 2 3; do
+        echo "==> pull image (attempt $attempt/3)"
+        if docker compose pull docs; then
+            return 0
+        fi
+        if [ "$attempt" -lt 3 ]; then
+            echo "warning: pull aborted, retrying in 5s..." >&2
+            sleep 5
+        fi
+    done
+
+    return 1
+}
+
+if ! pull_image; then
+    echo "error: image pull failed after 3 attempts" >&2
+    echo "       Known issue: IPv6 transfers from Fastly/GitHub are reset." >&2
+    echo "       Allow ICMP/ICMPv6 in the Contabo firewall on the server." >&2
+    exit 1
+fi
 
 after="$(docker image inspect --format '{{.Id}}' "$IMAGE" 2>/dev/null || true)"
 

@@ -53,9 +53,11 @@ RUN if [ -x /usr/bin/chromium ]; then \
 ENV LARAVEL_PDF_CHROME_BINARY=/usr/local/bin/chromium
 
 # PHP extensions required by the app (SQLite demo DB, intl formatting,
-# Composer/zip, sockets for chrome-php).
+# Composer/zip, sockets for chrome-php). gd is required by
+# phpoffice/phpspreadsheet (Excel export); without it the composer
+# install fails its platform check before the app code is copied.
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions intl zip opcache pcntl sockets pdo_sqlite sqlite3 \
+RUN install-php-extensions intl zip opcache pcntl sockets pdo_sqlite sqlite3 gd \
     && rm -rf /var/cache/apk/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

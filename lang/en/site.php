@@ -900,6 +900,8 @@ return [
         'install_lead' => 'The Excel exporter is optional and uses PhpSpreadsheet. The HTML and PDF renderers keep working without it.',
         'usage_title' => 'Export from code or routing',
         'usage_lead' => 'Reports::excel() uses the same filters, sorting and locale as the HTML and PDF output. The package also registers /reports/{name}/xlsx.',
+        'workbook_title' => 'Multi-sheet workbook',
+        'workbook_lead' => 'Use Reports::excelWorkbook() when one file should contain several lists. Every sheet keeps its own report source, filters and options; global options are merged into each sheet.',
         'fields_title' => 'What goes into the cells',
         'fields_lead' => 'The source fields decide the columns; their type and format tokens decide the cell type and Excel number format.',
         'fields' => [
